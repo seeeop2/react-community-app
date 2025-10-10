@@ -2,6 +2,8 @@ import React from 'react';
 import StatsCard from "../components/StatsCard.jsx";
 import {FileText, Plus, Users, Zap} from "lucide-react";
 import Header from "../components/Header.jsx";
+import PostList from "../components/PostList.jsx";
+import SearchBar from "../components/SearchBar.jsx";
 
 const Home = ({posts}) => {
 
@@ -42,6 +44,10 @@ const Home = ({posts}) => {
               variant="green"
           />
         </div>
+
+        <PostList posts={posts}
+                  searchComponent={<SearchBar/>}
+        />
       </div>
   );
 };
