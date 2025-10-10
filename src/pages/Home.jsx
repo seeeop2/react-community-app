@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import StatsCard from "../components/StatsCard.jsx";
 import {FileText, Plus, Users, Zap} from "lucide-react";
 import Header from "../components/Header.jsx";
@@ -6,6 +6,11 @@ import PostList from "../components/PostList.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 
 const Home = ({posts}) => {
+  const [keyword, setKeyword] = useState("");
+
+  const filteredPosts = posts.filter(post =>
+      post.title.toLowerCase().includes(keyword.toLowerCase())
+  );
 
   return (
       <div className="p-12">
@@ -45,8 +50,8 @@ const Home = ({posts}) => {
           />
         </div>
 
-        <PostList posts={posts}
-                  searchComponent={<SearchBar/>}
+        <PostList posts={filteredPosts}
+                  searchComponent={<SearchBar onSearch={setKeyword}/>}
         />
       </div>
   );
