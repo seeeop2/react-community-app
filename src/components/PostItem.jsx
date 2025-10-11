@@ -19,7 +19,7 @@ const PostItem = ({post}) => {
               <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded font-bold uppercase">
                 {post.category}
               </span>
-                <span className="text-[10px] text-slate-400">{post.date}</span>
+                <span className="text-[10px] text-slate-400">{new Date(post.date).toLocaleDateString()}</span>
               </div>
             </div>
           </div>
