@@ -3,6 +3,7 @@ import PostItem from "./PostItem.jsx";
 
 const PostList = ({
   posts,
+  users,
   searchComponent
 }) => {
   return (
@@ -25,6 +26,7 @@ const PostList = ({
             {posts.map((post) => (
                 <PostItem key={post.id}
                           post={post}
+                          users={users}
                 />
             ))}
             </tbody>

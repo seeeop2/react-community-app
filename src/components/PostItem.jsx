@@ -1,7 +1,16 @@
 import React from 'react';
 import {Edit2, MessageSquare, Trash2} from 'lucide-react';
 
-const PostItem = ({post}) => {
+const PostItem = ({
+  post,
+  users
+}) => {
+
+  const getUserName = (userId) => {
+    const user = users.find((user) => user.id === userId);
+    return user ? user.name : "알 수 없음"
+  }
+
   return (
       <tr className="group hover:bg-blue-50/30 transition-all cursor-pointer">
         <td className="px-8 py-5">
@@ -24,7 +33,7 @@ const PostItem = ({post}) => {
             </div>
           </div>
         </td>
-        <td className="px-8 py-5 text-sm font-medium text-slate-600">{post.author}</td>
+        <td className="px-8 py-5 text-sm font-medium text-slate-600">{getUserName(post.userId)}</td>
         <td className="px-8 py-5">
           <div
               className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300"

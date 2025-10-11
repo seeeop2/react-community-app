@@ -5,7 +5,10 @@ import Header from "../components/Header.jsx";
 import PostList from "../components/PostList.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 
-const Home = ({posts}) => {
+const Home = ({
+  posts,
+  users
+}) => {
   const [keyword, setKeyword] = useState("");
 
   const filteredPosts = posts.filter(post =>
@@ -51,6 +54,7 @@ const Home = ({posts}) => {
         </div>
 
         <PostList posts={filteredPosts}
+                  users={users}
                   searchComponent={<SearchBar onSearch={setKeyword}/>}
         />
       </div>
