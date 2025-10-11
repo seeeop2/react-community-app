@@ -4,7 +4,7 @@ import Home from "./pages/Home.jsx";
 import Notfound from "./pages/Notfound.jsx";
 import {useState} from "react";
 
-const mockData = [
+const mockPosts = [
   {
     id: 1,
     title: "게시글 1",
@@ -28,8 +28,32 @@ const mockData = [
   },
 ]
 
+const mockUsers = [
+  {
+    id: 1,
+    name: "운영자",
+    isActive: true,
+  },
+  {
+    id: 2,
+    name: "사용자2",
+    isActive: true,
+  },
+  {
+    id: 3,
+    name: "사용자3",
+    isActive: true,
+  },
+  {
+    id: 4,
+    name: "사용자4",
+    isActive: false,
+  },
+];
+
 function App() {
-  const [posts, setPosts] = useState(mockData);
+  const [posts, setPosts] = useState(mockPosts);
+  const [users, setUsers] = useState(mockUsers);
 
   return (
       <Routes>
