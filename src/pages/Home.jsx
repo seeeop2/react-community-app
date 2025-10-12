@@ -10,10 +10,19 @@ const Home = ({
   users
 }) => {
   const [keyword, setKeyword] = useState("");
+  const todayTime = new Date().setHours(0, 0, 0, 0);
 
   const filteredPosts = posts.filter(post =>
       post.title.toLowerCase().includes(keyword.toLowerCase())
   );
+
+  const todayPostsCount = posts.filter((post) =>
+      post.date >= todayTime
+  ).length;
+
+  const activeMemberCount = users.filter((user) =>
+      user.isActive
+  ).length;
 
   return (
       <div className="p-12">
@@ -40,14 +49,14 @@ const Home = ({
           />
           <StatsCard
               title="오늘 올라온 글"
-              count={2}
+              count={todayPostsCount}
               icon={Zap}
               variant="orange"
               highlight={true}
           />
           <StatsCard
               title="활동 멤버"
-              count={15}
+              count={activeMemberCount}
               icon={Users}
               variant="green"
           />
