@@ -2,7 +2,7 @@ import './App.css'
 import {Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Notfound from "./pages/Notfound.jsx";
-import {useState} from "react";
+import {useRef, useState} from "react";
 
 const mockPosts = [
   {
@@ -54,12 +54,47 @@ const mockUsers = [
 function App() {
   const [posts, setPosts] = useState(mockPosts);
   const [users, setUsers] = useState(mockUsers);
+  const idRef = useRef(4);
+
+  const onCreate = (title, author, category) => {
+    const newPost = {
+      id: idRef.current++,
+      title: title,
+      author: author,
+      date: new Date().getTime(),
+      category: category,
+    }
+    setPosts([newPost, ...posts])
+  }
+
+  const onUpdate = (targetId, title) => {
+    setPosts(posts.map((post) =>
+        post.id === targetId ? {...post, title} : post
+    ))
+  }
+
+  const onDelete = (targetId) => {
+    setPosts(posts.filter((post) =>
+        post.id !== targetId
+    ))
+  }
 
   return (
-      <Routes>
-        <Route path="/" element={<Home posts={posts} users={users}/>}/>
-        <Route path="/*" element={<Notfound/>}/>
-      </Routes>
+      <>
+        <button onClick={() => onCreate("test", "운영자", "공지")}>
+          게시글 추가 테스트
+        </button>
+        <button onClick={() => onUpdate(1, "게시글 수정 테스트")}>
+          게시글 수정 테스트
+        </button>
+        <button onClick={() => onDelete(1)}>
+          게시글 삭제 테스트
+        </button>
+        <Routes>
+          <Route path="/" element={<Home posts={posts} users={users}/>}/>
+          <Route path="/*" element={<Notfound/>}/>
+        </Routes>
+      </>
   )
 }
 
