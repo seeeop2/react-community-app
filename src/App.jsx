@@ -2,7 +2,7 @@ import './App.css'
 import {Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Notfound from "./pages/Notfound.jsx";
-import {useRef, useState} from "react";
+import {createContext, useReducer, useRef} from "react";
 
 const mockPosts = [
   {
@@ -51,49 +51,97 @@ const mockUsers = [
   },
 ];
 
+export const AppStateContext = createContext();
+export const AppDispatchContext = createContext();
+
+const reducer = (state, action) => {
+  switch (action.type) {
+    case 'POST/CREATE':
+      return {
+        ...state,
+        posts: [action.payload, ...state.posts]
+      };
+    case 'POST/UPDATE':
+      return {
+        ...state,
+        posts: state.posts.map((post) =>
+            post.id === action.payload.targetId ? {...post, title: action.payload.title} : post
+        )
+      }
+    case 'POST/DELETE':
+      return {
+        ...state,
+        posts: state.posts.filter((post) =>
+            post.id !== action.payload.targetId
+        )
+      }
+    default:
+      return state;
+  }
+}
+
 function App() {
-  const [posts, setPosts] = useState(mockPosts);
-  const [users, setUsers] = useState(mockUsers);
+  const [state, dispatch] = useReducer(reducer, {
+    posts: mockPosts,
+    users: mockUsers,
+  })
   const idRef = useRef(4);
 
-  const onCreate = (title, author, category) => {
-    const newPost = {
-      id: idRef.current++,
-      title: title,
-      author: author,
-      date: new Date().getTime(),
-      category: category,
-    }
-    setPosts([newPost, ...posts])
+  const onCreatePost = (title, author, category) => {
+    dispatch({
+      type: "POST/CREATE",
+      payload: {
+        id: idRef.current++,
+        title: title,
+        author: author,
+        date: new Date().getTime(),
+        category: category,
+      }
+    })
   }
 
-  const onUpdate = (targetId, title) => {
-    setPosts(posts.map((post) =>
-        post.id === targetId ? {...post, title} : post
-    ))
+  const onUpdatePost = (targetId, title) => {
+    dispatch({
+      type: "POST/UPDATE",
+      payload: {
+        targetId,
+        title,
+      }
+    })
   }
 
-  const onDelete = (targetId) => {
-    setPosts(posts.filter((post) =>
-        post.id !== targetId
-    ))
+  const onDeletePost = (targetId) => {
+    dispatch({
+      type: "POST/DELETE",
+      payload: {
+        targetId,
+      }
+    })
   }
 
   return (
       <>
-        <button onClick={() => onCreate("test", "운영자", "공지")}>
+        <button onClick={() => onCreatePost("test", "운영자", "공지")}>
           게시글 추가 테스트
         </button>
-        <button onClick={() => onUpdate(1, "게시글 수정 테스트")}>
+        <button onClick={() => onUpdatePost(1, "게시글 수정 테스트")}>
           게시글 수정 테스트
         </button>
-        <button onClick={() => onDelete(1)}>
+        <button onClick={() => onDeletePost(1)}>
           게시글 삭제 테스트
         </button>
-        <Routes>
-          <Route path="/" element={<Home posts={posts} users={users}/>}/>
-          <Route path="/*" element={<Notfound/>}/>
-        </Routes>
+        <AppStateContext.Provider value={state}>
+          <AppDispatchContext.Provider value={{
+            onCreatePost,
+            onUpdatePost,
+            onDeletePost,
+          }}>
+            <Routes>
+              <Route path="/" element={<Home/>}/>
+              <Route path="/*" element={<Notfound/>}/>
+            </Routes>
+          </AppDispatchContext.Provider>
+        </AppStateContext.Provider>
       </>
   )
 }

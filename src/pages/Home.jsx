@@ -1,14 +1,13 @@
-import React, {useState} from 'react';
+import React, {useContext, useState} from 'react';
 import StatsCard from "../components/StatsCard.jsx";
 import {FileText, Plus, Users, Zap} from "lucide-react";
 import Header from "../components/Header.jsx";
 import PostList from "../components/PostList.jsx";
 import SearchBar from "../components/SearchBar.jsx";
+import {AppStateContext} from "../App.jsx";
 
-const Home = ({
-  posts,
-  users
-}) => {
+const Home = () => {
+  const {posts, users} = useContext(AppStateContext);
   const [keyword, setKeyword] = useState("");
   const todayTime = new Date().setHours(0, 0, 0, 0);
 
