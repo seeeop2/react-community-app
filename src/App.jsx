@@ -121,15 +121,6 @@ function App() {
 
   return (
       <>
-        <button onClick={() => onCreatePost("test", "운영자", "공지")}>
-          게시글 추가 테스트
-        </button>
-        <button onClick={() => onUpdatePost(1, "게시글 수정 테스트")}>
-          게시글 수정 테스트
-        </button>
-        <button onClick={() => onDeletePost(1)}>
-          게시글 삭제 테스트
-        </button>
         <AppStateContext.Provider value={state}>
           <AppDispatchContext.Provider value={{
             onCreatePost,
