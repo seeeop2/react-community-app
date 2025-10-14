@@ -1,5 +1,6 @@
 import React from 'react';
 import {Edit2, MessageSquare, Trash2} from 'lucide-react';
+import {CATEGORY_MAP} from "../constants/categories.js";
 
 const PostItem = ({
   post,
@@ -26,7 +27,7 @@ const PostItem = ({
               </p>
               <div className="flex items-center gap-2 mt-0.5">
               <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded font-bold uppercase">
-                {post.category}
+                {CATEGORY_MAP[post.category]}
               </span>
                 <span className="text-[10px] text-slate-400">{new Date(post.date).toLocaleDateString()}</span>
               </div>

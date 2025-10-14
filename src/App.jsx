@@ -12,7 +12,7 @@ const mockPosts = [
     content: "첫 번째 게시글의 본문입니다.",
     userId: 1,
     date: new Date("2026-03-09").getTime(),
-    category: "공지"
+    category: "NOTICE"
   },
   {
     id: 2,
@@ -20,7 +20,7 @@ const mockPosts = [
     content: "두 번째 게시글의 본문입니다.",
     userId: 2,
     date: new Date("2026-03-10").getTime(),
-    category: "정보"
+    category: "INFO"
   },
   {
     id: 3,
@@ -28,7 +28,7 @@ const mockPosts = [
     content: "세 번째 게시글의 본문입니다.",
     userId: 3,
     date: new Date("2026-03-11").getTime(),
-    category: "잡담"
+    category: "CHAT"
   },
 ]
 

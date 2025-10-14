@@ -2,11 +2,12 @@ import React, {useContext, useRef, useState} from 'react';
 import {useNavigate} from "react-router-dom";
 import {AppDispatchContext} from "../App.jsx";
 import {ArrowLeft, Send} from "lucide-react";
+import {CATEGORY_LIST} from "../constants/categories.js";
 
 const New = () => {
   const [input, setInput] = useState({
     title: "",
-    category: "공지",
+    category: "NOTICE",
     content: "",
   });
   const titleRef = useRef(null);
@@ -65,9 +66,11 @@ const New = () => {
                   className="w-full p-4 mb-6 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
                   onChange={onChangeInput}
           >
-            <option>공지</option>
-            <option>정보</option>
-            <option>잡담</option>
+            {CATEGORY_LIST.map((category) =>
+                <option value={category.value} key={category.value}>
+                  {category.label}
+                </option>
+            )}
           </select>
 
           <label className="block text-sm font-semibold mb-2">제목</label>
