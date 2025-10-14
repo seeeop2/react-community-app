@@ -3,11 +3,13 @@ import {Route, Routes} from "react-router-dom";
 import Home from "./pages/Home.jsx";
 import Notfound from "./pages/Notfound.jsx";
 import {createContext, useReducer, useRef} from "react";
+import New from "./pages/New.jsx";
 
 const mockPosts = [
   {
     id: 1,
     title: "게시글 1",
+    content: "첫 번째 게시글의 본문입니다.",
     userId: 1,
     date: new Date("2026-03-09").getTime(),
     category: "공지"
@@ -15,6 +17,7 @@ const mockPosts = [
   {
     id: 2,
     title: "게시글 2",
+    content: "두 번째 게시글의 본문입니다.",
     userId: 2,
     date: new Date("2026-03-10").getTime(),
     category: "정보"
@@ -22,6 +25,7 @@ const mockPosts = [
   {
     id: 3,
     title: "게시글 3",
+    content: "세 번째 게시글의 본문입니다.",
     userId: 3,
     date: new Date("2026-03-11").getTime(),
     category: "잡담"
@@ -87,15 +91,16 @@ function App() {
   })
   const idRef = useRef(4);
 
-  const onCreatePost = (title, author, category) => {
+  const onCreatePost = ({title, content, userId, category}) => {
     dispatch({
       type: "POST/CREATE",
       payload: {
         id: idRef.current++,
-        title: title,
-        author: author,
+        title,
+        content,
+        userId,
         date: new Date().getTime(),
-        category: category,
+        category,
       }
     })
   }
@@ -129,6 +134,7 @@ function App() {
           }}>
             <Routes>
               <Route path="/" element={<Home/>}/>
+              <Route path="/new" element={<New/>}/>
               <Route path="/*" element={<Notfound/>}/>
             </Routes>
           </AppDispatchContext.Provider>
