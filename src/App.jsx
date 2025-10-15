@@ -4,6 +4,7 @@ import Home from "./pages/Home.jsx";
 import Notfound from "./pages/Notfound.jsx";
 import {createContext, useReducer, useRef} from "react";
 import New from "./pages/New.jsx";
+import PostDetail from "./components/PostDetail.jsx";
 
 const mockPosts = [
   {
@@ -135,6 +136,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home/>}/>
               <Route path="/new" element={<New/>}/>
+              <Route path="/post/:id" element={<PostDetail/>}/>
               <Route path="/*" element={<Notfound/>}/>
             </Routes>
           </AppDispatchContext.Provider>

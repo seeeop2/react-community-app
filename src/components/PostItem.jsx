@@ -1,19 +1,27 @@
 import React from 'react';
 import {Edit2, MessageSquare, Trash2} from 'lucide-react';
 import {CATEGORY_MAP} from "../constants/categories.js";
+import {useNavigate} from "react-router-dom";
 
 const PostItem = ({
   post,
   users
 }) => {
+  const nav = useNavigate();
 
   const getUserName = (userId) => {
     const user = users.find((user) => user.id === userId);
     return user ? user.name : "알 수 없음"
   }
 
+  const handleNavigateDetail = () => {
+    nav(`/post/${post.id}`);
+  };
+
   return (
-      <tr className="group hover:bg-blue-50/30 transition-all cursor-pointer">
+      <tr className="group hover:bg-blue-50/30 transition-all cursor-pointer"
+          onClick={handleNavigateDetail}
+      >
         <td className="px-8 py-5">
           <div className="flex items-center gap-4">
             <div
