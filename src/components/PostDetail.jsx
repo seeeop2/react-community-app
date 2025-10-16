@@ -2,7 +2,7 @@ import React, {useContext, useEffect} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {AppStateContext} from "../App.jsx";
 import {CATEGORY_MAP} from "../constants/categories.js";
-import {ArrowLeft, Calendar, Tag} from "lucide-react";
+import {ArrowLeft, Calendar, Edit3, Tag} from "lucide-react";
 
 const PostDetail = () => {
   const {id} = useParams();
@@ -33,7 +33,7 @@ const PostDetail = () => {
   return (
       <div className="max-w-2xl mx-auto p-12">
         <button className="flex items-center gap-2 text-gray-500 mb-8 hover:text-blue-600 transition-colors"
-                onClick={() => nav(-1)}
+                onClick={() => nav('/')}
         >
           <ArrowLeft size={20}/> 목록으로 돌아가기
         </button>
@@ -54,6 +54,17 @@ const PostDetail = () => {
 
           <div className="text-gray-700 leading-relaxed text-lg whitespace-pre-wrap min-h-[300px]">
             {post.content}
+          </div>
+
+          <div className="flex justify-end gap-3 mt-12 pt-8 border-t border-gray-100">
+            <button
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 transition-all"
+                onClick={() =>
+                    nav(`/edit/${post.id}`)
+                }
+            >
+              <Edit3 size={16}/> 수정
+            </button>
           </div>
         </div>
       </div>

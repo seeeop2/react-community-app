@@ -18,6 +18,11 @@ const PostItem = ({
     nav(`/post/${post.id}`);
   };
 
+  const handleNavigateEdit = (e) => {
+    e.stopPropagation();
+    nav(`/edit/${post.id}`);
+  };
+
   return (
       <tr className="group hover:bg-blue-50/30 transition-all cursor-pointer"
           onClick={handleNavigateDetail}
@@ -47,7 +52,11 @@ const PostItem = ({
           <div
               className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0 transition-all duration-300"
           >
-            <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors"><Edit2 size={16}/></button>
+            <button className="p-2 text-slate-400 hover:text-blue-600 transition-colors"
+                    onClick={handleNavigateEdit}
+            >
+              <Edit2 size={16}/>
+            </button>
             <button className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
           </div>
         </td>

@@ -5,6 +5,7 @@ import Notfound from "./pages/Notfound.jsx";
 import {createContext, useReducer, useRef} from "react";
 import New from "./pages/New.jsx";
 import PostDetail from "./components/PostDetail.jsx";
+import Edit from "./pages/Edit.jsx";
 
 const mockPosts = [
   {
@@ -70,7 +71,14 @@ const reducer = (state, action) => {
       return {
         ...state,
         posts: state.posts.map((post) =>
-            post.id === action.payload.targetId ? {...post, title: action.payload.title} : post
+            String(post.id) === String(action.payload.targetId)
+                ? {
+                  ...post,
+                  title: action.payload.title,
+                  content: action.payload.content,
+                  category: action.payload.category,
+                }
+                : post
         )
       }
     case 'POST/DELETE':
@@ -106,12 +114,14 @@ function App() {
     })
   }
 
-  const onUpdatePost = (targetId, title) => {
+  const onUpdatePost = (targetId, title, content, category) => {
     dispatch({
       type: "POST/UPDATE",
       payload: {
         targetId,
         title,
+        content,
+        category
       }
     })
   }
@@ -137,6 +147,7 @@ function App() {
               <Route path="/" element={<Home/>}/>
               <Route path="/new" element={<New/>}/>
               <Route path="/post/:id" element={<PostDetail/>}/>
+              <Route path="/edit/:id" element={<Edit/>}/>
               <Route path="/*" element={<Notfound/>}/>
             </Routes>
           </AppDispatchContext.Provider>
