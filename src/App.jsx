@@ -14,7 +14,8 @@ const mockPosts = [
     content: "첫 번째 게시글의 본문입니다.",
     userId: 1,
     date: new Date("2026-03-09").getTime(),
-    category: "NOTICE"
+    category: "NOTICE",
+    isDeleted: false,
   },
   {
     id: 2,
@@ -22,7 +23,8 @@ const mockPosts = [
     content: "두 번째 게시글의 본문입니다.",
     userId: 2,
     date: new Date("2026-03-10").getTime(),
-    category: "INFO"
+    category: "INFO",
+    isDeleted: false,
   },
   {
     id: 3,
@@ -30,7 +32,8 @@ const mockPosts = [
     content: "세 번째 게시글의 본문입니다.",
     userId: 3,
     date: new Date("2026-03-11").getTime(),
-    category: "CHAT"
+    category: "CHAT",
+    isDeleted: false,
   },
 ]
 
@@ -81,11 +84,13 @@ const reducer = (state, action) => {
                 : post
         )
       }
-    case 'POST/DELETE':
+    case 'POST/SOFT_DELETE':
       return {
         ...state,
-        posts: state.posts.filter((post) =>
-            post.id !== action.payload.targetId
+        posts: state.posts.map((post) =>
+            String(post.id) === String(action.payload.targetId)
+                ? {...post, isDeleted: true}
+                : post
         )
       }
     default:
@@ -128,7 +133,7 @@ function App() {
 
   const onDeletePost = (targetId) => {
     dispatch({
-      type: "POST/DELETE",
+      type: "POST/SOFT_DELETE",
       payload: {
         targetId,
       }

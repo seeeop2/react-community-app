@@ -1,4 +1,4 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext, useEffect, useRef} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {AppDispatchContext, AppStateContext} from "../App.jsx";
 import {CATEGORY_MAP} from "../constants/categories.js";
@@ -9,19 +9,22 @@ const PostDetail = () => {
   const {posts} = useContext(AppStateContext);
   const {onDeletePost} = useContext(AppDispatchContext);
   const nav = useNavigate();
+  const isDeleting = useRef(false);
 
   const post = posts.find((post) =>
       String(post.id) === id
   );
 
+  const isInvalid = !post || post.isDeleted;
+
   useEffect(() => {
-    if (!post) {
+    if (isInvalid && !isDeleting.current) {
       window.alert('존재하지 않는 게시글입니다.');
       nav('/', {replace: true});
     }
-  }, [id, nav]);
+  }, [isInvalid, nav]);
 
-  if (!post) {
+  if (isInvalid) {
     return null;
   }
 
@@ -33,6 +36,7 @@ const PostDetail = () => {
 
   const onClickDelete = () => {
     if (window.confirm("정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.")) {
+      isDeleting.current = true;
       onDeletePost(post.id);
       nav("/", {replace: true});
     }

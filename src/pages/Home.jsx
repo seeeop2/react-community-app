@@ -13,11 +13,13 @@ const Home = () => {
   const todayTime = new Date().setHours(0, 0, 0, 0);
   const nav = useNavigate();
 
-  const filteredPosts = posts.filter(post =>
+  const activePosts = posts.filter((post) => !post.isDeleted);
+
+  const filteredPosts = activePosts.filter(post =>
       post.title.toLowerCase().includes(keyword.toLowerCase())
   );
 
-  const todayPostsCount = posts.filter((post) =>
+  const todayPostsCount = activePosts.filter((post) =>
       post.date >= todayTime
   ).length;
 
@@ -45,7 +47,7 @@ const Home = () => {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
           <StatsCard
               title="전체 게시글"
-              count={posts.length}
+              count={activePosts.length}
               icon={FileText}
               variant="blue"
           />
