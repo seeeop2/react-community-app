@@ -1,12 +1,14 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import {Edit2, MessageSquare, Trash2} from 'lucide-react';
 import {CATEGORY_MAP} from "../constants/categories.js";
 import {useNavigate} from "react-router-dom";
+import {AppDispatchContext} from "../App.jsx";
 
 const PostItem = ({
   post,
   users
 }) => {
+  const {onDeletePost} = useContext(AppDispatchContext);
   const nav = useNavigate();
 
   const getUserName = (userId) => {
@@ -21,6 +23,13 @@ const PostItem = ({
   const handleNavigateEdit = (e) => {
     e.stopPropagation();
     nav(`/edit/${post.id}`);
+  };
+
+  const handleDelete = (e) => {
+    e.stopPropagation();
+    if (window.confirm("정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.")) {
+      onDeletePost(post.id);
+    }
   };
 
   return (
@@ -57,7 +66,11 @@ const PostItem = ({
             >
               <Edit2 size={16}/>
             </button>
-            <button className="p-2 text-slate-400 hover:text-red-500 transition-colors"><Trash2 size={16}/></button>
+            <button className="p-2 text-slate-400 hover:text-red-500 transition-colors"
+                    onClick={handleDelete}
+            >
+              <Trash2 size={16}/>
+            </button>
           </div>
         </td>
       </tr>
