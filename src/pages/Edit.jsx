@@ -1,8 +1,8 @@
-import React, {useContext, useEffect, useRef, useState} from 'react';
+import React, {useContext, useEffect} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {AppDispatchContext, AppStateContext} from "../App.jsx";
-import {CATEGORY_LIST} from "../constants/categories.js";
 import {ArrowLeft} from "lucide-react";
+import PostEditor from "../components/PostEditor.jsx";
 
 const Edit = () => {
   const {id} = useParams();
@@ -10,48 +10,20 @@ const Edit = () => {
   const {onUpdatePost} = useContext(AppDispatchContext); // 수정 함수
   const nav = useNavigate();
 
-  const [input, setInput] = useState({title: "", category: "NOTICE", content: ""});
-  const titleRef = useRef(null);
-  const contentRef = useRef(null);
+  const targetPost = posts.find((item) => String(item.id) === String(id));
 
   useEffect(() => {
-    const targetPost = posts.find((item) =>
-        String(item.id) === String(id)
-    );
-
-    if (targetPost) {
-      setInput({
-        title: targetPost.title,
-        category: targetPost.category,
-        content: targetPost.content,
-      });
-    } else {
-      window.alert("게시글을 찾을 수 없습니다.");
-      nav("/", {replace: true});
+    if (!targetPost) {
+      window.alert('게시글이 없습니다.');
+      nav('/', {replace: true});
     }
-  }, [id, posts, nav]);
+  }, [id, targetPost, nav]);
 
-  const onChangeInput = (e) => {
-    let name = e.target.name;
-    let value = e.target.value;
-
-    setInput({
-      ...input,
-      [name]: value,
-    })
+  if (!targetPost) {
+    return <div>로딩중...</div>;
   }
 
-  const onSubmit = () => {
-    if (!input.title.trim()) {
-      window.alert("제목을 입력하세요!");
-      return titleRef.current.focus();
-    }
-
-    if (!input.content.trim()) {
-      window.alert("내용을 입력하세요!");
-      return contentRef.current.focus();
-    }
-
+  const handleSubmit = (input) => {
     onUpdatePost(id, input.title, input.content, input.category);
     nav(`/post/${id}`, {replace: true});
   };
@@ -68,42 +40,11 @@ const Edit = () => {
           <ArrowLeft size={20}/> 목록으로 돌아가기
         </button>
         <h2 className="text-3xl font-extrabold mb-8">글 수정하기</h2>
-        <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
-          <label className="block text-sm font-semibold mb-2">카테고리</label>
-          <select value={input.category}
-                  name="category"
-                  className="w-full p-4 mb-6 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
-                  onChange={onChangeInput}
-          >
-            {CATEGORY_LIST.map((category) =>
-                <option value={category.value} key={category.value}>
-                  {category.label}
-                </option>
-            )}
-          </select>
+        <PostEditor initData={targetPost}
+                    submitButtonText="수정 완료하기"
+                    onSubmit={handleSubmit}
+        />
 
-          <label className="block text-sm font-semibold mb-2">제목</label>
-          <input value={input.title}
-                 name="title"
-                 ref={titleRef}
-                 className="w-full p-4 mb-8 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
-                 onChange={onChangeInput}
-                 placeholder="제목을 입력해주세요."
-          />
-
-          <label className="block text-sm font-semibold mb-2">본문</label>
-          <textarea value={input.content}
-                    name="content"
-                    ref={contentRef}
-                    className="w-full p-4 mb-8 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none"
-                    rows="10"
-                    onChange={onChangeInput}
-                    placeholder="내용을 입력해주세요."
-          />
-          <button className="w-full bg-blue-600 text-white py-4 rounded-2xl font-bold" onClick={onSubmit}>
-            수정 완료하기
-          </button>
-        </div>
       </div>
   );
 };
