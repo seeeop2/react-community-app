@@ -6,6 +6,7 @@ import PostList from "../components/PostList.jsx";
 import SearchBar from "../components/SearchBar.jsx";
 import {AppStateContext} from "../App.jsx";
 import {useNavigate} from "react-router-dom";
+import Button from "../components/Button.jsx";
 
 const Home = () => {
   const {posts, users} = useContext(AppStateContext);
@@ -34,13 +35,13 @@ const Home = () => {
                 highlightTitle="Board"
                 description="자유롭게 의견을 나누는 공간입니다."
                 action={
-                  <button
-                      className="w-full md:w-auto group flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-2xl font-bold transition-all shadow-lg shadow-blue-200"
-                      onClick={() => nav('/new')}
+                  <Button fontWeight='bold'
+                          fullWidth={true}
+                          onClick={() => nav('/new')}
                   >
                     <Plus size={20}/>
                     새 글 쓰기
-                  </button>
+                  </Button>
                 }
         />
 

@@ -3,6 +3,7 @@ import {useNavigate, useParams} from "react-router-dom";
 import {AppDispatchContext, AppStateContext} from "../App.jsx";
 import {CATEGORY_MAP} from "../constants/categories.js";
 import {ArrowLeft, Calendar, Edit3, Tag, Trash2} from "lucide-react";
+import Button from "./Button.jsx";
 
 const PostDetail = () => {
   const {id} = useParams();
@@ -44,11 +45,12 @@ const PostDetail = () => {
 
   return (
       <div className="max-w-2xl mx-auto p-12">
-        <button className="flex items-center gap-2 text-gray-500 mb-8 hover:text-blue-600 transition-colors"
+        <Button variant="ghost"
+                className="mb-8 px-0"
                 onClick={() => nav('/')}
         >
           <ArrowLeft size={20}/> 목록으로 돌아가기
-        </button>
+        </Button>
 
         <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100">
           <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
@@ -69,20 +71,19 @@ const PostDetail = () => {
           </div>
 
           <div className="flex justify-end gap-3 mt-12 pt-8 border-t border-gray-100">
-            <button
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-gray-600 hover:bg-gray-100 transition-all"
-                onClick={() =>
-                    nav(`/edit/${post.id}`)
-                }
+            <Button variant='ghost'
+                    onClick={() =>
+                        nav(`/edit/${post.id}`)
+                    }
             >
               <Edit3 size={16}/> 수정
-            </button>
-            <button
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl text-red-600 hover:bg-red-50 transition-all"
-                onClick={onClickDelete}
+            </Button>
+
+            <Button variant='dangerGhost'
+                    onClick={onClickDelete}
             >
               <Trash2 size={16}/> 삭제
-            </button>
+            </Button>
 
           </div>
         </div>

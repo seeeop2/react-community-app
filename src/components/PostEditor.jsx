@@ -1,6 +1,7 @@
 import React, {useRef, useState} from 'react';
 import {CATEGORY_LIST} from "../constants/categories.js";
 import {Send} from "lucide-react";
+import Button from "./Button.jsx";
 
 const PostEditor = ({
   initData,
@@ -75,12 +76,12 @@ const PostEditor = ({
                   placeholder="내용을 입력하세요."
         />
 
-        <button
-            className="w-full flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-2xl font-bold transition-all shadow-lg"
-            onClick={handleSubmit}
+        <Button fontWeight="bold"
+                fullWidth={true}
+                onClick={handleSubmit}
         >
           <Send size={18}/> {submitButtonText}
-        </button>
+        </Button>
       </div>
   );
 };
