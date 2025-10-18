@@ -8,6 +8,7 @@ const PostEditor = ({
   onSubmit,
   submitButtonText,
 }) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [input, setInput] = useState(initData || {
     title: "",
     category: "NOTICE",
@@ -26,7 +27,7 @@ const PostEditor = ({
     });
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!input.title.trim()) {
       window.alert("제목을 입력하세요!");
       return titleRef.current.focus();
@@ -35,7 +36,16 @@ const PostEditor = ({
       window.alert("내용을 입력하세요!");
       return contentRef.current.focus();
     }
-    onSubmit(input);
+
+    setIsLoading(true);
+
+    try {
+      await onSubmit(input);
+    } catch (error) {
+      console.error("제출 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -78,6 +88,7 @@ const PostEditor = ({
 
         <Button fontWeight="bold"
                 fullWidth={true}
+                loading={isLoading}
                 onClick={handleSubmit}
         >
           <Send size={18}/> {submitButtonText}

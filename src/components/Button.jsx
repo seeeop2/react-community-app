@@ -1,4 +1,5 @@
 import React from 'react';
+import Spinner from "./Spinner.jsx";
 
 const Button = ({
   children,
@@ -8,6 +9,7 @@ const Button = ({
   size = "md",
   fontWeight = "normal",
   fullWidth = false,
+  loading = false,
   disabled = false,
   className = ""
 }) => {
@@ -50,17 +52,18 @@ const Button = ({
     ${fontWeights[fontWeight]} 
     ${fullWidth && 'w-full'}
     ${disabled ? disabledStyle : variants[variant]}
-    ${interactions[variant]}
+    ${!loading && !disabled && interactions[variant]}
     ${className}
   `.trim();
 
   return (
       <button type={type}
-              disabled={disabled}
+              disabled={disabled || loading}
               className={combinedClasses}
               onClick={onClick}
       >
-        <span className={`flex items-center justify-center gap-2 whitespace-nowrap`}>
+        {loading && <Spinner variant={variant}/>}
+        <span className={`flex items-center justify-center gap-2 whitespace-nowrap ${loading ? "opacity-60" : ""}`}>
           {children}
         </span>
       </button>

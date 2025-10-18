@@ -1,4 +1,4 @@
-import React, {useContext, useEffect, useRef} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
 import {AppDispatchContext, AppStateContext} from "../App.jsx";
 import {CATEGORY_MAP} from "../constants/categories.js";
@@ -10,7 +10,7 @@ const PostDetail = () => {
   const {posts} = useContext(AppStateContext);
   const {onDeletePost} = useContext(AppDispatchContext);
   const nav = useNavigate();
-  const isDeleting = useRef(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const post = posts.find((post) =>
       String(post.id) === id
@@ -19,7 +19,7 @@ const PostDetail = () => {
   const isInvalid = !post || post.isDeleted;
 
   useEffect(() => {
-    if (isInvalid && !isDeleting.current) {
+    if (isInvalid && !isProcessing) {
       window.alert('존재하지 않는 게시글입니다.');
       nav('/', {replace: true});
     }
@@ -35,11 +35,15 @@ const PostDetail = () => {
     day: 'numeric',
   });
 
-  const onClickDelete = () => {
+  const onClickDelete = async () => {
     if (window.confirm("정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.")) {
-      isDeleting.current = true;
-      onDeletePost(post.id);
-      nav("/", {replace: true});
+      setIsProcessing(true);
+      try {
+        await onDeletePost(post.id); // 비동기 작업 시 await
+        nav("/", {replace: true});
+      } catch (error) {
+        setIsProcessing(false); // 에러 시 로딩 종료
+      }
     }
   };
 
@@ -80,6 +84,7 @@ const PostDetail = () => {
             </Button>
 
             <Button variant='dangerGhost'
+                    loading={isProcessing}
                     onClick={onClickDelete}
             >
               <Trash2 size={16}/> 삭제
