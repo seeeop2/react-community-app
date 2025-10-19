@@ -1,27 +1,19 @@
-import React, {useContext, useEffect} from 'react';
+import React, {useContext} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
-import {AppDispatchContext, AppStateContext} from "../App.jsx";
+import {AppDispatchContext} from "../App.jsx";
 import {ArrowLeft} from "lucide-react";
 import PostEditor from "../components/PostEditor.jsx";
 import Button from "../components/Button.jsx";
+import usePost from "../hooks/usePost.jsx";
 
 const Edit = () => {
   const {id} = useParams();
-  const {posts} = useContext(AppStateContext);
   const {onUpdatePost} = useContext(AppDispatchContext); // 수정 함수
   const nav = useNavigate();
 
-  const targetPost = posts.find((item) => String(item.id) === String(id));
-
-  useEffect(() => {
-    if (!targetPost) {
-      window.alert('게시글이 없습니다.');
-      nav('/', {replace: true});
-    }
-  }, [id, targetPost, nav]);
-
-  if (!targetPost) {
-    return <div>로딩중...</div>;
+  const post = usePost(id);
+  if (!post) {
+    return null;
   }
 
   const handleSubmit = (input) => {
@@ -44,7 +36,7 @@ const Edit = () => {
           <ArrowLeft size={20}/> 이전으로 돌아가기
         </Button>
         <h2 className="text-3xl font-extrabold mb-8">글 수정하기</h2>
-        <PostEditor initData={targetPost}
+        <PostEditor initData={post}
                     submitButtonText="수정 완료하기"
                     onSubmit={handleSubmit}
         />

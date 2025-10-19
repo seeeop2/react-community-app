@@ -1,32 +1,21 @@
-import React, {useContext, useEffect, useState} from 'react';
+import React, {useContext, useState} from 'react';
 import {useNavigate, useParams} from "react-router-dom";
-import {AppDispatchContext, AppStateContext} from "../App.jsx";
+import {AppDispatchContext} from "../App.jsx";
 import {CATEGORY_MAP} from "../constants/categories.js";
 import {ArrowLeft, Calendar, Edit3, Tag, Trash2} from "lucide-react";
 import Button from "./Button.jsx";
 import Badge from "./Badge.jsx";
+import usePost from "../hooks/usePost.jsx";
 
 const PostDetail = () => {
   const {id} = useParams();
-  const {posts} = useContext(AppStateContext);
   const {onDeletePost} = useContext(AppDispatchContext);
   const nav = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const post = posts.find((post) =>
-      String(post.id) === id
-  );
+  const post = usePost(id);
 
-  const isInvalid = !post || post.isDeleted;
-
-  useEffect(() => {
-    if (isInvalid && !isProcessing) {
-      window.alert('존재하지 않는 게시글입니다.');
-      nav('/', {replace: true});
-    }
-  }, [isInvalid, nav]);
-
-  if (isInvalid) {
+  if (!post) {
     return null;
   }
 
