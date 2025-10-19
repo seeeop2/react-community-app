@@ -4,6 +4,7 @@ import {AppDispatchContext, AppStateContext} from "../App.jsx";
 import {CATEGORY_MAP} from "../constants/categories.js";
 import {ArrowLeft, Calendar, Edit3, Tag, Trash2} from "lucide-react";
 import Button from "./Button.jsx";
+import Badge from "./Badge.jsx";
 
 const PostDetail = () => {
   const {id} = useParams();
@@ -58,9 +59,11 @@ const PostDetail = () => {
 
         <div className="bg-white p-10 rounded-3xl shadow-sm border border-gray-100">
           <div className="flex flex-wrap items-center gap-4 mb-6 text-sm">
-            <div className="flex items-center gap-1.5 font-bold text-blue-600 bg-blue-50 px-4 py-1.5 rounded-full">
+            <Badge size='sm'
+                   fontWeight='bold'
+            >
               <Tag size={14}/> {CATEGORY_MAP[post.category]}
-            </div>
+            </Badge>
             <div className="flex items-center gap-1.5 text-gray-400">
               <Calendar size={14}/> {formattedDate}
             </div>

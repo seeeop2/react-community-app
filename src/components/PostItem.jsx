@@ -3,6 +3,7 @@ import {Edit2, MessageSquare, Trash2} from 'lucide-react';
 import {CATEGORY_MAP} from "../constants/categories.js";
 import {useNavigate} from "react-router-dom";
 import {AppDispatchContext} from "../App.jsx";
+import Badge from "./Badge.jsx";
 
 const PostItem = ({
   post,
@@ -48,9 +49,13 @@ const PostItem = ({
                 {post.title}
               </p>
               <div className="flex items-center gap-2 mt-0.5">
-              <span className="text-[10px] bg-slate-100 text-slate-500 px-2 py-1 rounded font-bold uppercase">
-                {CATEGORY_MAP[post.category]}
-              </span>
+                <Badge variant="gray"
+                       shape="rounded"
+                       size="xxs"
+                       fontWeight="bold"
+                >
+                  {CATEGORY_MAP[post.category]}
+                </Badge>
                 <span className="text-[10px] text-slate-400">{new Date(post.date).toLocaleDateString()}</span>
               </div>
             </div>
