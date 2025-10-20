@@ -1,4 +1,5 @@
 import React from 'react';
+import {cn} from "../lib/utils.js";
 
 const StatsCard = ({
   title,
@@ -28,7 +29,10 @@ const StatsCard = ({
   const highlightStyle = highlight ? `border-t-4 ${variants[variant].border}` : "";
 
   return (
-      <div className={`${baseStyle} ${highlightStyle}`}>
+      <div className={cn(
+          baseStyle,
+          highlightStyle
+      )}>
         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center ${variants[variant].box}`}>
           <Icon size={24}/>
         </div>

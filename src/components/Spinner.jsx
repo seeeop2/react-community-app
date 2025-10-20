@@ -1,4 +1,5 @@
 import React from 'react';
+import {cn} from "../lib/utils.js";
 
 const Spinner = ({
   variant = 'primary',
@@ -18,13 +19,14 @@ const Spinner = ({
   }
 
   const combinedClasses = `
-  ${baseStyle}
-  ${spinnerColor[variant]}
-  ${sizes[size]}
   `;
 
   return (
-      <span className={combinedClasses}/>
+      <span className={cn(
+          baseStyle,
+          spinnerColor[variant],
+          sizes[size],
+      )}/>
   );
 };
 

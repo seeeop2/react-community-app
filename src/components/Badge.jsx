@@ -1,4 +1,5 @@
 import React from 'react';
+import {cn} from "../lib/utils.js";
 
 const Badge = ({
   children,
@@ -45,9 +46,15 @@ const Badge = ({
   const baseStyle = "inline-flex items-center gap-1.5 uppercase";
 
   return (
-      <div
-          className={`${baseStyle} ${variants[variant]} ${sizes[size]} ${shapes[shape]} ${fontWeights[fontWeight]} ${className} ${trackings[tracking]}`}
-      >
+      <div className={cn(
+          baseStyle,
+          variants[variant],
+          sizes[size],
+          shapes[shape],
+          fontWeights[fontWeight],
+          trackings[tracking],
+          className,
+      )}>
         {children}
       </div>
   );

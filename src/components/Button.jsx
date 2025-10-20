@@ -1,5 +1,6 @@
 import React from 'react';
 import Spinner from "./Spinner.jsx";
+import {cn} from "../lib/utils.js";
 
 const Button = ({
   children,
@@ -46,20 +47,18 @@ const Button = ({
 
   const disabledStyle = "bg-slate-200 text-slate-400 cursor-not-allowed shadow-none";
 
-  const combinedClasses = `
-    ${baseStyle} 
-    ${sizes[size]} 
-    ${fontWeights[fontWeight]} 
-    ${fullWidth && 'w-full'}
-    ${disabled ? disabledStyle : variants[variant]}
-    ${!loading && !disabled && interactions[variant]}
-    ${className}
-  `.trim();
-
   return (
       <button type={type}
               disabled={disabled || loading}
-              className={combinedClasses}
+              className={cn(
+                  baseStyle,
+                  sizes[size],
+                  fontWeights[fontWeight],
+                  fullWidth && 'w-full',
+                  disabled ? disabledStyle : variants[variant],
+                  !loading && !disabled && interactions[variant],
+                  className,
+              )}
               onClick={onClick}
       >
         {loading && <Spinner variant={variant}/>}
