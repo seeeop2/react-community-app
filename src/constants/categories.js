@@ -1,15 +1,15 @@
 export const CATEGORY_LIST = [
   {
-    value: "NOTICE",
-    label: "공지"
+    value: 'NOTICE',
+    label: '공지',
   },
   {
-    value: "INFO",
-    label: "정보"
+    value: 'INFO',
+    label: '정보',
   },
   {
-    value: "CHAT",
-    label: "잡담"
+    value: 'CHAT',
+    label: '잡담',
   },
 ];
 
