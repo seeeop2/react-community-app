@@ -1,25 +1,29 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AppDispatchContext } from '../App.jsx';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import { ArrowLeft, Calendar, Edit3, Tag, Trash2 } from 'lucide-react';
 import Button from './Button.jsx';
 import Badge from './Badge.jsx';
 import usePost from '../hooks/usePost.jsx';
+import usePosts from '../hooks/usePosts.js';
 
 const PostDetail = () => {
   const { id } = useParams();
-  const { onDeletePost } = useContext(AppDispatchContext);
+  const { removePost } = usePosts();
   const nav = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const post = usePost(id);
+  const { post, isLoading } = usePost(id);
 
-  if (!post) {
-    return null;
+  if (isLoading) {
+    return <div>로딩 중...</div>;
   }
 
-  const formattedDate = new Date(post.date).toLocaleDateString('ko-KR', {
+  if (!post) {
+    return <div>게시글을 찾을 수 없습니다.</div>;
+  }
+
+  const formattedDate = new Date(post.created_at).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
@@ -31,10 +35,13 @@ const PostDetail = () => {
     ) {
       setIsProcessing(true);
       try {
-        await onDeletePost(post.id); // 비동기 작업 시 await
+        await removePost(post.id); // 비동기 작업 시 await
         nav('/', { replace: true });
       } catch (error) {
-        setIsProcessing(false); // 에러 시 로딩 종료
+        console.error('삭제 실패:', error);
+        alert('삭제 중 오류가 발생했습니다. 다시 시도해 주세요.'); // 사용자 알림
+      } finally {
+        setIsProcessing(false); // 성공/실패 여부와 관계없이 로딩 종료
       }
     }
   };

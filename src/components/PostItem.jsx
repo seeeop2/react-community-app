@@ -1,12 +1,14 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import { Edit2, MessageSquare, Trash2 } from 'lucide-react';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatchContext } from '../App.jsx';
 import Badge from './Badge.jsx';
+import usePosts from '../hooks/usePosts.js';
 
 const PostItem = ({ post, users }) => {
-  const { onDeletePost } = useContext(AppDispatchContext);
+  const [isDeleting, setIsDeleting] = useState(false); // 로딩 상태
+  const { removePost } = usePosts();
+
   const nav = useNavigate();
 
   const getUserName = (userId) => {
@@ -23,12 +25,22 @@ const PostItem = ({ post, users }) => {
     nav(`/edit/${post.id}`);
   };
 
-  const handleDelete = (e) => {
+  const handleDelete = async (e) => {
     e.stopPropagation();
     if (
       window.confirm('정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.')
     ) {
-      onDeletePost(post.id);
+      setIsDeleting(true);
+      try {
+        await removePost(post.id);
+        alert('삭제되었습니다.');
+      } catch (error) {
+        console.error('삭제 실패:', error);
+        alert('삭제에 실패했습니다.');
+        window.location.reload();
+      } finally {
+        setIsDeleting(false);
+      }
     }
   };
 
@@ -56,14 +68,14 @@ const PostItem = ({ post, users }) => {
                 {CATEGORY_MAP[post.category]}
               </Badge>
               <span className="text-[10px] text-slate-400">
-                {new Date(post.date).toLocaleDateString()}
+                {new Date(post.created_at).toLocaleDateString()}
               </span>
             </div>
           </div>
         </div>
       </td>
       <td className="px-8 py-5 text-sm font-medium text-slate-600">
-        {getUserName(post.userId)}
+        {getUserName(post.user_id)}
       </td>
       <td className="px-8 py-5">
         <div className="flex translate-x-1 justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
@@ -75,6 +87,7 @@ const PostItem = ({ post, users }) => {
           </button>
           <button
             className="p-2 text-slate-400 transition-colors hover:text-red-500"
+            disabled={isDeleting}
             onClick={handleDelete}
           >
             <Trash2 size={16} />

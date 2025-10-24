@@ -1,17 +1,21 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { AppDispatchContext } from '../App.jsx';
 import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
+import usePosts from '../hooks/usePosts.js';
 
 const New = () => {
-  const { onCreatePost } = useContext(AppDispatchContext);
+  const { createPost } = usePosts();
   const nav = useNavigate();
 
-  const handleSubmit = (input) => {
-    onCreatePost({ ...input, userId: 1 });
-    nav('/', { replace: true });
+  const handleSubmit = async (input) => {
+    try {
+      await createPost({ ...input });
+      nav('/', { replace: true });
+    } catch (error) {
+      console.error('제출 중 에러 발생:', error);
+    }
   };
 
   const handleCancel = () => {

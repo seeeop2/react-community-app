@@ -1,22 +1,38 @@
-import { useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { AppStateContext } from '../App.jsx';
+import { useEffect, useState } from 'react';
+import * as postApi from '../api/postApi.js';
 
 const usePost = (id) => {
-  const { posts } = useContext(AppStateContext);
-  const nav = useNavigate();
-
-  const post = posts.find((p) => String(p.id) === String(id));
-  const isInvalid = !post || post.isDeleted;
+  const [post, setPost] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    if (isInvalid) {
-      window.alert('존재하지 않거나 삭제된 게시글입니다.');
-      nav('/', { replace: true });
+    if (!id) {
+      return;
     }
-  }, [isInvalid, nav]);
 
-  return post;
+    const fetchPost = async () => {
+      try {
+        setIsLoading(true);
+        setError(null); // 새로운 요청을 시작할 때 이전 에러 초기화
+        const data = await postApi.getPostById(id);
+
+        if (!data) {
+          throw new Error('존재하지 않는 게시글입니다.');
+        }
+
+        setPost(data);
+      } catch (err) {
+        console.error('상세 데이터 로드 실패:', err);
+        setError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchPost();
+  }, [id]);
+
+  return { post, isLoading, error };
 };
 
 export default usePost;

@@ -1,23 +1,32 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { AppDispatchContext } from '../App.jsx';
 import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
 import usePost from '../hooks/usePost.jsx';
+import usePosts from '../hooks/usePosts.js';
 
 const Edit = () => {
   const { id } = useParams();
-  const { onUpdatePost } = useContext(AppDispatchContext); // 수정 함수
+  const { editPost } = usePosts();
   const nav = useNavigate();
 
-  const post = usePost(id);
-  if (!post) {
-    return null;
+  const { post, isLoading } = usePost(id);
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
   }
 
-  const handleSubmit = (input) => {
-    onUpdatePost(id, input.title, input.content, input.category);
+  if (!post) {
+    return <div>게시글을 찾을 수 없습니다.</div>;
+  }
+
+  const handleSubmit = async (input) => {
+    await editPost(id, {
+      title: input.title,
+      content: input.content,
+      category: input.category,
+    });
     nav(`/post/${id}`, { replace: true });
   };
 

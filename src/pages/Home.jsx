@@ -4,27 +4,33 @@ import { FileText, Plus, Users, Zap } from 'lucide-react';
 import Header from '../components/Header.jsx';
 import PostList from '../components/PostList.jsx';
 import SearchBar from '../components/SearchBar.jsx';
-import { AppStateContext } from '../App.jsx';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
+import { AppStateContext } from '../App.jsx';
+import usePosts from '../hooks/usePosts.js';
 
 const Home = () => {
-  const { posts, users } = useContext(AppStateContext);
+  const { posts = [], isLoading } = usePosts();
+  const { users } = useContext(AppStateContext);
   const [keyword, setKeyword] = useState('');
+  // TODO: 추후 API 단에서 필터링하여 최적화 필요
   const todayTime = new Date().setHours(0, 0, 0, 0);
   const nav = useNavigate();
 
-  const activePosts = posts.filter((post) => !post.isDeleted);
-
-  const filteredPosts = activePosts.filter((post) =>
+  const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(keyword.toLowerCase())
   );
 
-  const todayPostsCount = activePosts.filter(
-    (post) => post.date >= todayTime
-  ).length;
+  const todayPostsCount = posts.filter((post) => {
+    const postDate = new Date(post.created_at).getTime();
+    return postDate >= todayTime;
+  }).length;
 
   const activeMemberCount = users.filter((user) => user.isActive).length;
+
+  if (isLoading) {
+    return <div>로딩 중...</div>;
+  }
 
   return (
     <div className="p-12">
@@ -47,7 +53,7 @@ const Home = () => {
       <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
         <StatsCard
           title="전체 게시글"
-          count={activePosts.length}
+          count={posts.length}
           icon={FileText}
           variant="blue"
         />

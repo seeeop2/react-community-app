@@ -2,10 +2,11 @@ import './App.css';
 import { Route, Routes } from 'react-router-dom';
 import Home from './pages/Home.jsx';
 import Notfound from './pages/Notfound.jsx';
-import { createContext, useReducer, useRef } from 'react';
+import { createContext, useState } from 'react';
 import New from './pages/New.jsx';
 import PostDetail from './components/PostDetail.jsx';
 import Edit from './pages/Edit.jsx';
+import PostProvider from './context/PostProvider.jsx';
 
 const mockPosts = [
   {
@@ -61,95 +62,16 @@ const mockUsers = [
 ];
 
 export const AppStateContext = createContext();
-export const AppDispatchContext = createContext();
-
-const reducer = (state, action) => {
-  switch (action.type) {
-    case 'POST/CREATE':
-      return {
-        ...state,
-        posts: [action.payload, ...state.posts],
-      };
-    case 'POST/UPDATE':
-      return {
-        ...state,
-        posts: state.posts.map((post) =>
-          String(post.id) === String(action.payload.targetId)
-            ? {
-                ...post,
-                title: action.payload.title,
-                content: action.payload.content,
-                category: action.payload.category,
-              }
-            : post
-        ),
-      };
-    case 'POST/SOFT_DELETE':
-      return {
-        ...state,
-        posts: state.posts.map((post) =>
-          String(post.id) === String(action.payload.targetId)
-            ? { ...post, isDeleted: true }
-            : post
-        ),
-      };
-    default:
-      return state;
-  }
-};
 
 function App() {
-  const [state, dispatch] = useReducer(reducer, {
-    posts: mockPosts,
+  const [state] = useState({
     users: mockUsers,
   });
-  const idRef = useRef(4);
-
-  const onCreatePost = ({ title, content, userId, category }) => {
-    dispatch({
-      type: 'POST/CREATE',
-      payload: {
-        id: idRef.current++,
-        title,
-        content,
-        userId,
-        date: new Date().getTime(),
-        category,
-      },
-    });
-  };
-
-  const onUpdatePost = (targetId, title, content, category) => {
-    dispatch({
-      type: 'POST/UPDATE',
-      payload: {
-        targetId,
-        title,
-        content,
-        category,
-      },
-    });
-  };
-
-  const onDeletePost = (targetId) => {
-    dispatch({
-      type: 'POST/SOFT_DELETE',
-      payload: {
-        targetId,
-      },
-    });
-  };
 
   return (
     <>
       <AppStateContext.Provider value={state}>
-        <AppDispatchContext.Provider
-          value={{
-            onCreatePost,
-            onUpdatePost,
-            onDeletePost,
-          }}
-        >
+        <PostProvider>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/new" element={<New />} />
@@ -157,7 +79,7 @@ function App() {
             <Route path="/edit/:id" element={<Edit />} />
             <Route path="/*" element={<Notfound />} />
           </Routes>
-        </AppDispatchContext.Provider>
+        </PostProvider>
       </AppStateContext.Provider>
     </>
   );
