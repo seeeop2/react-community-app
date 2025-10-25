@@ -1,6 +1,6 @@
 import React from 'react';
 import Spinner from './Spinner.jsx';
-import { cn } from '../lib/utils.js';
+import { cn } from '../utils/cn.js';
 
 const Button = ({
   children,
