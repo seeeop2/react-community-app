@@ -38,8 +38,7 @@ const PostDetail = () => {
         await removePost(post.id); // 비동기 작업 시 await
         nav('/', { replace: true });
       } catch (error) {
-        console.error('삭제 실패:', error);
-        alert('삭제 중 오류가 발생했습니다. 다시 시도해 주세요.'); // 사용자 알림
+        // 에러 알림은 PostProvider의 handleError에서 처리함
       } finally {
         setIsProcessing(false); // 성공/실패 여부와 관계없이 로딩 종료
       }

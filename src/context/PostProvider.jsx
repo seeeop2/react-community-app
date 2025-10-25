@@ -6,6 +6,7 @@ import React, {
 } from 'react';
 
 import * as postApi from '../api/postApi';
+import { handleError } from '../utils/errorHandler.js';
 
 export const PostContext = createContext();
 
@@ -29,7 +30,7 @@ const PostProvider = ({ children }) => {
         payload: data,
       });
     } catch (error) {
-      console.error('데이터 로드 실패:', error);
+      handleError('데이터 로드에 실패했습니다.', error);
     }
   }, []);
 
@@ -50,8 +51,8 @@ const PostProvider = ({ children }) => {
       // 서버에 저장이 성공하면 전체 목록을 다시 불러와서 화면 갱신
       await fetchPosts();
     } catch (error) {
-      console.error('게시글 생성 실패:', error);
-      alert('게시글 작성 중 오류가 발생했습니다.');
+      handleError('게시글 저장에 실패했습니다.', error);
+      throw error;
     }
   };
 
@@ -60,8 +61,8 @@ const PostProvider = ({ children }) => {
       await postApi.updatePost(id, updatedFields); // 서버 업데이트
       await fetchPosts(); // 최신 데이터 다시 불러와서 로컬 메모리 갱신
     } catch (error) {
-      console.error('수정 실패:', error);
-      alert('수정 중 오류가 발생했습니다.');
+      handleError('게시글 수정에 실패했습니다.', error);
+      throw error;
     }
   };
 
@@ -70,8 +71,8 @@ const PostProvider = ({ children }) => {
       await postApi.softDeletePost(id); // 서버 업데이트
       await fetchPosts(); // 최신 데이터 다시 불러와서 로컬 메모리 갱신
     } catch (error) {
-      alert('삭제 중 오류가 발생했습니다.');
-      console.error('게시글 삭제 실패:', error);
+      handleError('게시글 삭제에 실패했습니다.', error);
+      throw error;
     }
   };
 

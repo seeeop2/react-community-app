@@ -40,7 +40,7 @@ const PostEditor = ({ initData, onSubmit, submitButtonText }) => {
     try {
       await onSubmit(input);
     } catch (error) {
-      console.error('제출 실패:', error);
+      // 에러 알림은 PostProvider의 handleError에서 처리함
     } finally {
       setIsLoading(false);
     }

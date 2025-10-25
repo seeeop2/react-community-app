@@ -35,9 +35,7 @@ const PostItem = ({ post, users }) => {
         await removePost(post.id);
         alert('삭제되었습니다.');
       } catch (error) {
-        console.error('삭제 실패:', error);
-        alert('삭제에 실패했습니다.');
-        window.location.reload();
+        // 에러 알림은 PostProvider의 handleError에서 처리함
       } finally {
         setIsDeleting(false);
       }

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import * as postApi from '../api/postApi.js';
+import { handleError } from '../utils/errorHandler.js';
 
 const usePost = (id) => {
   const [post, setPost] = useState(null);
@@ -23,7 +24,7 @@ const usePost = (id) => {
 
         setPost(data);
       } catch (err) {
-        console.error('상세 데이터 로드 실패:', err);
+        handleError('상세 데이터 로드에 실패했습니다.', err);
         setError(err.message || '데이터를 불러오는 중 오류가 발생했습니다.');
       } finally {
         setIsLoading(false);
