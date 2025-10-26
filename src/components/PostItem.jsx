@@ -13,7 +13,7 @@ const PostItem = ({ post, users }) => {
 
   const getUserName = (userId) => {
     const user = users.find((user) => user.id === userId);
-    return user ? user.name : '알 수 없음';
+    return user ? user.username : '알 수 없음';
   };
 
   const handleNavigateDetail = () => {
@@ -73,7 +73,7 @@ const PostItem = ({ post, users }) => {
         </div>
       </td>
       <td className="px-8 py-5 text-sm font-medium text-slate-600">
-        {getUserName(post.user_id)}
+        {getUserName(post.author_id)}
       </td>
       <td className="px-8 py-5">
         <div className="flex translate-x-1 justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">

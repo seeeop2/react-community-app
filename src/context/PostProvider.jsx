@@ -44,7 +44,7 @@ const PostProvider = ({ children }) => {
         title,
         content,
         category,
-        user_id: 1, // 임시로 1로 고정. TODO: 추후 현재 로그인 유저 정보로 변경
+        author_id: '7e5dbfde-8074-4e54-8113-838f233c5b88', // 임시로 테스트 유저 고정. TODO: 추후 현재 로그인 유저 정보로 변경
         is_deleted: false,
       });
 

@@ -6,12 +6,12 @@ import PostList from '../components/PostList.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
-import { AppStateContext } from '../App.jsx';
 import usePosts from '../hooks/usePosts.js';
+import { UserContext } from '../context/UserProvider.jsx';
 
 const Home = () => {
   const { posts = [], isLoading } = usePosts();
-  const { users } = useContext(AppStateContext);
+  const { users } = useContext(UserContext);
   const [keyword, setKeyword] = useState('');
   // TODO: 추후 API 단에서 필터링하여 최적화 필요
   const todayTime = new Date().setHours(0, 0, 0, 0);
@@ -26,7 +26,9 @@ const Home = () => {
     return postDate >= todayTime;
   }).length;
 
-  const activeMemberCount = users.filter((user) => user.isActive).length;
+  const activeMemberCount = users.filter(
+    (user) => user.status === 'active'
+  ).length;
 
   if (isLoading) {
     return <div>로딩 중...</div>;
