@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
-import usePost from '../hooks/usePost.jsx';
+import usePost from '../hooks/usePost.js';
 import usePosts from '../hooks/usePosts.js';
 
 const Edit = () => {

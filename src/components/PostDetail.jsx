@@ -4,7 +4,7 @@ import { CATEGORY_MAP } from '../constants/categories.js';
 import { ArrowLeft, Calendar, Edit3, Tag, Trash2 } from 'lucide-react';
 import Button from './Button.jsx';
 import Badge from './Badge.jsx';
-import usePost from '../hooks/usePost.jsx';
+import usePost from '../hooks/usePost.js';
 import usePosts from '../hooks/usePosts.js';
 
 const PostDetail = () => {

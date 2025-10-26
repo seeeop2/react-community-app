@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import StatsCard from '../components/StatsCard.jsx';
 import { FileText, Plus, Users, Zap } from 'lucide-react';
 import Header from '../components/Header.jsx';
@@ -7,11 +7,11 @@ import SearchBar from '../components/SearchBar.jsx';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
 import usePosts from '../hooks/usePosts.js';
-import { UserContext } from '../context/UserProvider.jsx';
+import useUsers from '../hooks/useUsers.js';
 
 const Home = () => {
-  const { posts = [], isLoading } = usePosts();
-  const { users } = useContext(UserContext);
+  const { posts = [], isLoading: isPostLoading } = usePosts();
+  const { users = [], isLoading: isUserLoading } = useUsers();
   const [keyword, setKeyword] = useState('');
   // TODO: 추후 API 단에서 필터링하여 최적화 필요
   const todayTime = new Date().setHours(0, 0, 0, 0);
@@ -30,7 +30,7 @@ const Home = () => {
     (user) => user.status === 'active'
   ).length;
 
-  if (isLoading) {
+  if (isPostLoading || isUserLoading) {
     return <div>로딩 중...</div>;
   }
 
