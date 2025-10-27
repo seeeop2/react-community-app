@@ -7,22 +7,57 @@ import PostDetail from './components/PostDetail.jsx';
 import Edit from './pages/Edit.jsx';
 import PostProvider from './context/PostProvider.jsx';
 import UserProvider from './context/UserProvider.jsx';
+import { AuthProvider } from './context/AuthProvider.jsx';
+import AuthPage from './pages/AuthPage.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 function App() {
   return (
-    <>
+    <AuthProvider>
       <UserProvider>
         <PostProvider>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/new" element={<New />} />
-            <Route path="/post/:id" element={<PostDetail />} />
-            <Route path="/edit/:id" element={<Edit />} />
+            <Route path="/auth" element={<AuthPage />} />
+
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/new"
+              element={
+                <ProtectedRoute>
+                  <New />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/post/:id"
+              element={
+                <ProtectedRoute>
+                  <PostDetail />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/edit/:id"
+              element={
+                <ProtectedRoute>
+                  <Edit />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 404 페이지 */}
             <Route path="/*" element={<Notfound />} />
           </Routes>
         </PostProvider>
       </UserProvider>
-    </>
+    </AuthProvider>
   );
 }
 
