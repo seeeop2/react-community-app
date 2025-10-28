@@ -26,7 +26,7 @@ const New = () => {
 
   return (
     <div className="mx-auto max-w-2xl p-12">
-      <Button variant="ghost" onClick={handleCancel} className="mb-8">
+      <Button variant="ghost" onClick={handleCancel} className="mb-8 px-0">
         <ArrowLeft size={20} /> 목록으로 돌아가기
       </Button>
 

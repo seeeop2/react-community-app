@@ -5,7 +5,7 @@ import React, {
   useReducer,
 } from 'react';
 
-import * as postApi from '../api/postApi';
+import * as postApi from '../api/postApi.js';
 import { handleError } from '../utils/errorHandler.js';
 
 export const PostContext = createContext();

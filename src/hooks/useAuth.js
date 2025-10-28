@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { AuthContext } from '../context/AuthProvider.jsx'; // AuthProvider에서 만든 Context 가져오기
+import { AuthContext } from '../contexts/AuthProvider.jsx';
 
 const useAuth = () => {
   const context = useContext(AuthContext);
