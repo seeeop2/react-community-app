@@ -76,7 +76,6 @@ const Home = () => {
 
       <PostList
         posts={filteredPosts}
-        users={users}
         searchComponent={<SearchBar onSearch={setKeyword} />}
       />
     </div>

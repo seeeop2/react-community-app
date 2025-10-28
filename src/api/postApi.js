@@ -4,7 +4,12 @@ import { supabase } from '../lib/supabase';
 export const getPosts = async () => {
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select(
+      `
+    *,
+    author:profiles(username)
+    `
+    )
     .eq('is_deleted', false)
     .order('created_at', { ascending: false });
   if (error) {

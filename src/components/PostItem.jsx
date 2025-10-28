@@ -5,16 +5,11 @@ import { useNavigate } from 'react-router-dom';
 import Badge from './Badge.jsx';
 import usePosts from '../hooks/usePosts.js';
 
-const PostItem = ({ post, users }) => {
+const PostItem = ({ post }) => {
   const [isDeleting, setIsDeleting] = useState(false); // 로딩 상태
   const { removePost } = usePosts();
 
   const nav = useNavigate();
-
-  const getUserName = (userId) => {
-    const user = users.find((user) => user.id === userId);
-    return user ? user.username : '알 수 없음';
-  };
 
   const handleNavigateDetail = () => {
     nav(`/post/${post.id}`);
@@ -73,7 +68,7 @@ const PostItem = ({ post, users }) => {
         </div>
       </td>
       <td className="px-8 py-5 text-sm font-medium text-slate-600">
-        {getUserName(post.author_id)}
+        {post.author?.username || '알 수 없음'}
       </td>
       <td className="px-8 py-5">
         <div className="flex translate-x-1 justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">

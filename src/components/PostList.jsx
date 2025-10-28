@@ -1,7 +1,7 @@
 import React from 'react';
 import PostItem from './PostItem.jsx';
 
-const PostList = ({ posts, users, searchComponent }) => {
+const PostList = ({ posts, searchComponent }) => {
   return (
     <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/60">
       {searchComponent && (
@@ -24,7 +24,7 @@ const PostList = ({ posts, users, searchComponent }) => {
           </thead>
           <tbody className="divide-y divide-slate-50">
             {posts.map((post) => (
-              <PostItem key={post.id} post={post} users={users} />
+              <PostItem key={post.id} post={post} />
             ))}
           </tbody>
         </table>
