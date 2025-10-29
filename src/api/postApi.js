@@ -7,7 +7,7 @@ export const getPosts = async () => {
     .select(
       `
     *,
-    author:profiles(username)
+    author:profiles(username, role)
     `
     )
     .eq('is_deleted', false)

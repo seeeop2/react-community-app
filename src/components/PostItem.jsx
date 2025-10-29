@@ -4,12 +4,18 @@ import { CATEGORY_MAP } from '../constants/categories.js';
 import { useNavigate } from 'react-router-dom';
 import Badge from './Badge.jsx';
 import usePosts from '../hooks/usePosts.js';
+import useAuth from '../hooks/useAuth.js';
 
 const PostItem = ({ post }) => {
   const [isDeleting, setIsDeleting] = useState(false); // 로딩 상태
   const { removePost } = usePosts();
-
+  const { user, isAdmin } = useAuth();
   const nav = useNavigate();
+
+  // 권한 체크 변수
+  const isAuthor = user?.id === post.author_id; // 내가 쓴 글인가?
+  const canEdit = isAuthor; // 수정은 '글쓴이'만 가능
+  const canDelete = isAuthor || isAdmin; // 삭제는 '글쓴이' 혹은 '관리자' 가능
 
   const handleNavigateDetail = () => {
     nav(`/post/${post.id}`);
@@ -72,19 +78,23 @@ const PostItem = ({ post }) => {
       </td>
       <td className="px-8 py-5">
         <div className="flex translate-x-1 justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
-          <button
-            className="p-2 text-slate-400 transition-colors hover:text-blue-600"
-            onClick={handleNavigateEdit}
-          >
-            <Edit2 size={16} />
-          </button>
-          <button
-            className="p-2 text-slate-400 transition-colors hover:text-red-500"
-            disabled={isDeleting}
-            onClick={handleDelete}
-          >
-            <Trash2 size={16} />
-          </button>
+          {canEdit && (
+            <button
+              className="p-2 text-slate-400 transition-colors hover:text-blue-600"
+              onClick={handleNavigateEdit}
+            >
+              <Edit2 size={16} />
+            </button>
+          )}
+          {canDelete && (
+            <button
+              className="p-2 text-slate-400 transition-colors hover:text-red-500"
+              disabled={isDeleting}
+              onClick={handleDelete}
+            >
+              <Trash2 size={16} />
+            </button>
+          )}
         </div>
       </td>
     </tr>

@@ -6,10 +6,12 @@ import Button from '../components/Button.jsx';
 import Badge from '../components/Badge.jsx';
 import usePost from '../hooks/usePost.js';
 import usePosts from '../hooks/usePosts.js';
+import useAuth from '../hooks/useAuth.js';
 
 const PostDetail = () => {
   const { id } = useParams();
   const { removePost } = usePosts();
+  const { user } = useAuth();
   const nav = useNavigate();
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -22,6 +24,8 @@ const PostDetail = () => {
   if (!post) {
     return <div>게시글을 찾을 수 없습니다.</div>;
   }
+
+  const isAuthor = user?.id === post.author_id;
 
   const formattedDate = new Date(post.created_at).toLocaleDateString('ko-KR', {
     year: 'numeric',
@@ -69,19 +73,21 @@ const PostDetail = () => {
           {post.content}
         </div>
 
-        <div className="mt-12 flex justify-end gap-3 border-t border-gray-100 pt-8">
-          <Button variant="ghost" onClick={() => nav(`/edit/${post.id}`)}>
-            <Edit3 size={16} /> 수정
-          </Button>
+        {isAuthor && (
+          <div className="mt-12 flex justify-end gap-3 border-t border-gray-100 pt-8">
+            <Button variant="ghost" onClick={() => nav(`/edit/${post.id}`)}>
+              <Edit3 size={16} /> 수정
+            </Button>
 
-          <Button
-            variant="dangerGhost"
-            loading={isProcessing}
-            onClick={onClickDelete}
-          >
-            <Trash2 size={16} /> 삭제
-          </Button>
-        </div>
+            <Button
+              variant="dangerGhost"
+              loading={isProcessing}
+              onClick={onClickDelete}
+            >
+              <Trash2 size={16} /> 삭제
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

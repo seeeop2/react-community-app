@@ -1,17 +1,26 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
 import usePost from '../hooks/usePost.js';
 import usePosts from '../hooks/usePosts.js';
+import useAuth from '../hooks/useAuth.js';
 
 const Edit = () => {
   const { id } = useParams();
+  const { user } = useAuth();
   const { editPost } = usePosts();
   const nav = useNavigate();
 
   const { post, isLoading } = usePost(id);
+
+  useEffect(() => {
+    if (post && user && post.author_id !== user.id) {
+      alert('본인의 글만 수정할 수 있습니다.');
+      nav('/', { replace: true });
+    }
+  }, [post, user, nav]);
 
   if (isLoading) {
     return <div>로딩 중...</div>;
