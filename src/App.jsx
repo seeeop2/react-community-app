@@ -10,12 +10,14 @@ import UserProvider from './contexts/UserProvider.jsx';
 import { AuthProvider } from './contexts/AuthProvider.jsx';
 import AuthPage from './pages/AuthPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
+import Navbar from './components/Navbar.jsx';
 
 function App() {
   return (
     <AuthProvider>
       <UserProvider>
         <PostProvider>
+          <Navbar />
           <Routes>
             <Route path="/auth" element={<AuthPage />} />
 
