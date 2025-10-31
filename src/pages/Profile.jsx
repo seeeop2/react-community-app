@@ -1,0 +1,191 @@
+import React, { useEffect, useState } from 'react';
+import useAuth from '../hooks/useAuth.js';
+import * as userApi from '../api/userApi.js';
+import Button from '../components/Button.jsx';
+import { Camera, Save, User } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { handleError } from '../utils/errorHandler.js';
+
+const Profile = () => {
+  const { profile, fetchProfile } = useAuth();
+  const nav = useNavigate();
+
+  const [formData, setFormData] = useState({
+    username: '',
+    bio: '',
+  });
+  const [isUpdating, setIsUpdating] = useState(false);
+
+  // 실제 파일 객체와 미리보기 URL 상태
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
+
+  // 초기 데이터 세팅
+  useEffect(() => {
+    if (profile) {
+      setFormData({
+        username: profile.username || '',
+        bio: profile.bio || '',
+      });
+      setPreviewUrl(profile.avatar_url || null); // 기존 이미지 있으면 보여줌
+    }
+  }, [profile]);
+
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: value,
+    });
+  };
+
+  // 이미지 선택 시: 서버 전송 안 함. '미리보기'만 생성
+  const handleFileSelect = (e) => {
+    const file = e.target.files[0];
+    if (!file) {
+      return;
+    }
+
+    setSelectedFile(file); // 실제 파일은 보관만 함
+
+    // 브라우저 메모리에 임시 주소 생성 (가짜 URL)
+    const objectUrl = URL.createObjectURL(file);
+    setPreviewUrl(objectUrl);
+
+    // 메모리 누수 방지를 위해 이전 objectUrl은 해제해주는 게 좋음
+    return () => URL.revokeObjectURL(objectUrl);
+  };
+
+  // 통합 저장 핸들러: 이미지 + 텍스트 함께 처리
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (!formData.username.trim()) {
+      return alert('닉네임을 입력해주세요.');
+    }
+
+    setIsUpdating(true);
+    try {
+      let finalAvatarUrl = profile.avatar_url;
+
+      // 이미지 업로드 (선택된 파일이 있을 때만)
+      if (selectedFile) {
+        finalAvatarUrl = await userApi.uploadAvatar(
+          profile.id,
+          selectedFile,
+          profile.avatar_url
+        );
+      }
+
+      // DB 업데이트 (닉네임 + 자기소개 + 사진 URL)
+      await userApi.updateProfile(profile.id, {
+        ...formData,
+        avatar_url: finalAvatarUrl,
+      });
+
+      await fetchProfile(profile.id);
+      setSelectedFile(null); // 전송 완료 후 초기화
+      nav('/');
+    } catch (error) {
+      handleError('프로필 설정 저장에 실패했습니다.', error);
+    } finally {
+      setIsUpdating(false);
+    }
+  };
+
+  return (
+    <div className="mx-auto max-w-2xl p-8 sm:p-12">
+      <div className="mb-10 text-center sm:text-left">
+        <h1 className="text-3xl font-black text-slate-800">
+          My <span className="text-blue-600">Profile</span>
+        </h1>
+        <p className="text-slate-500">회원님의 활동 정보를 관리하세요.</p>
+      </div>
+
+      <div className="rounded-3xl border border-slate-100 bg-white p-8 shadow-xl shadow-slate-200/50">
+        {/* 프로필 이미지 영역 */}
+        <div className="mb-10 flex flex-col items-center gap-4 sm:flex-row">
+          <div className="group relative">
+            <div className="h-24 w-24 overflow-hidden rounded-3xl border-4 border-white bg-slate-100 shadow-md">
+              {previewUrl ? (
+                <img
+                  src={previewUrl}
+                  alt="Profile"
+                  className="h-full w-full object-cover"
+                  // 이미지 로드 실패 시 실행되는 롤백 로직
+                  onError={() => {
+                    console.warn(
+                      '이미지를 불러올 수 없어 기본 아이콘으로 대체합니다.'
+                    );
+                    setPreviewUrl(null); // 주소를 비우면 하단의 User 아이콘이 자동으로 나타남
+                  }}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center text-slate-400">
+                  <User size={40} />
+                </div>
+              )}
+            </div>
+            {/* 파일 선택 숨겨진 input */}
+            <label className="absolute -bottom-2 -right-2 cursor-pointer rounded-xl bg-blue-600 p-2 text-white shadow-lg transition-transform hover:scale-110">
+              <Camera size={18} />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </label>
+          </div>
+          <div className="text-center sm:text-left">
+            <p className="text-lg font-bold text-slate-800">{profile?.email}</p>
+            <p className="text-xs font-semibold uppercase tracking-widest text-blue-500">
+              {profile?.role}
+            </p>
+          </div>
+        </div>
+
+        {/* 정보 수정 폼 */}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              닉네임
+            </label>
+            <input
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleInputChange}
+              className="w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm transition-all focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+              placeholder="활동명을 입력하세요"
+            />
+          </div>
+
+          <div>
+            <label className="mb-2 block text-sm font-bold text-slate-700">
+              자기소개
+            </label>
+            <textarea
+              value={formData.bio}
+              name="bio"
+              onChange={handleInputChange}
+              className="min-h-[120px] w-full rounded-2xl border border-slate-200 bg-slate-50 px-4 py-3.5 text-sm transition-all focus:border-blue-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10"
+              placeholder="자신을 짧게 소개해 주세요"
+            />
+          </div>
+
+          <Button type="submit" fullWidth disabled={isUpdating}>
+            {isUpdating ? (
+              '처리 중...'
+            ) : (
+              <>
+                <Save size={18} /> 설정 저장하기
+              </>
+            )}
+          </Button>
+        </form>
+      </div>
+    </div>
+  );
+};
+
+export default Profile;

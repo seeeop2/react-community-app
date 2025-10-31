@@ -11,6 +11,7 @@ import { AuthProvider } from './contexts/AuthProvider.jsx';
 import AuthPage from './pages/AuthPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Navbar from './components/Navbar.jsx';
+import Profile from './pages/Profile.jsx';
 
 function App() {
   return (
@@ -50,6 +51,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Edit />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <Profile />
                 </ProtectedRoute>
               }
             />

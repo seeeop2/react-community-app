@@ -54,6 +54,7 @@ export const AuthProvider = ({ children }) => {
         profile,
         isAdmin: profile?.role === 'admin',
         isLoading,
+        fetchProfile,
       }}
     >
       {children}

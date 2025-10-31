@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import { LayoutDashboard, LogOut, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -7,6 +7,15 @@ import useAuth from '../hooks/useAuth.js';
 const Navbar = () => {
   const { profile } = useAuth();
   const nav = useNavigate();
+  const [lastUrl, setLastUrl] = useState(profile?.avatar_url);
+  const [imageError, setImageError] = useState(false);
+
+  // 렌더링 도중 URL이 바뀌었는지 체크
+  // 유저가 사진을 업로드해서 profile.avatar_url이 바뀌면 에러 상태를 리셋
+  if (profile?.avatar_url !== lastUrl) {
+    setLastUrl(profile?.avatar_url);
+    setImageError(false);
+  }
 
   // 로그아웃 함수
   const handleLogout = async () => {
@@ -17,6 +26,10 @@ const Navbar = () => {
 
   const navigateToHome = () => {
     nav('/');
+  };
+
+  const navigateToProfile = () => {
+    nav('/profile');
   };
 
   // 로그인 안 된 상태(auth 페이지 등)에서는 Navbar 미표출
@@ -54,8 +67,21 @@ const Navbar = () => {
             </div>
 
             {/* 프로필 아바타 */}
-            <div className="flex h-9 w-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-slate-100 font-bold text-slate-500 transition-colors hover:border-blue-400">
-              <User size={18} />
+            <div
+              className="flex h-9 w-9 cursor-pointer items-center justify-center overflow-hidden rounded-xl border border-slate-200 bg-slate-100 font-bold text-slate-500 transition-colors hover:border-blue-400"
+              onClick={navigateToProfile}
+            >
+              {profile?.avatar_url && !imageError ? (
+                <img
+                  key={profile.avatar_url}
+                  src={profile.avatar_url}
+                  alt="User"
+                  className="h-full w-full object-cover"
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <User size={18} />
+              )}
             </div>
           </div>
 
