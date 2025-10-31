@@ -5,6 +5,7 @@ import Button from '../components/Button.jsx';
 import { Camera, Save, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { handleError } from '../utils/errorHandler.js';
+import imageCompression from 'browser-image-compression';
 
 const Profile = () => {
   const { profile, fetchProfile } = useAuth();
@@ -39,21 +40,44 @@ const Profile = () => {
     });
   };
 
-  // 이미지 선택 시: 서버 전송 안 함. '미리보기'만 생성
-  const handleFileSelect = (e) => {
+  // 이미지 선택 시: 서버 전송 안 함(용량 체크 및 압축/미리보기 생성)
+  const handleFileSelect = async (e) => {
     const file = e.target.files[0];
     if (!file) {
       return;
     }
 
-    setSelectedFile(file); // 실제 파일은 보관만 함
+    // 용량 10MB 초과 시 알림 이후 종료
+    const maxOriginalSize = 10 * 1024 * 1024;
+    if (file.size > maxOriginalSize) {
+      alert('프로필 사진은 10MB를 초과할 수 없습니다.');
+      e.target.value = '';
+      return;
+    }
 
-    // 브라우저 메모리에 임시 주소 생성 (가짜 URL)
-    const objectUrl = URL.createObjectURL(file);
-    setPreviewUrl(objectUrl);
+    try {
+      // 압축 옵션 설정
+      const options = {
+        maxSizeMB: 1, // 최대 용량 1MB로 압축
+        maxWidthOrHeight: 800, // 가로세로 최대 800px (프로필용)
+        useWebWorker: true, // 웹 워커 사용하여 메인 스레드 방해 금지
+      };
 
-    // 메모리 누수 방지를 위해 이전 objectUrl은 해제해주는 게 좋음
-    return () => URL.revokeObjectURL(objectUrl);
+      // 이미지 압축 진행
+      const compressedFile = await imageCompression(file, options);
+      setSelectedFile(compressedFile); // 서버 전송용은 압축된 파일로 저장
+
+      // 프리뷰 URL 생성 및 메모리 정리
+      if (previewUrl && previewUrl.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+
+      // 브라우저 메모리에 임시 주소 생성 (가짜 URL)
+      const objectUrl = URL.createObjectURL(compressedFile);
+      setPreviewUrl(objectUrl);
+    } catch (error) {
+      handleError('이미지 처리 중 오류가 발생했습니다.', error);
+    }
   };
 
   // 통합 저장 핸들러: 이미지 + 텍스트 함께 처리
