@@ -7,6 +7,11 @@ import { useNavigate } from 'react-router-dom';
 import { handleError } from '../utils/errorHandler.js';
 import imageCompression from 'browser-image-compression';
 import heic2any from 'heic2any';
+import {
+  ALLOWED_IMAGE_TYPES,
+  DEFAULT_COMPRESSION_OPTIONS,
+  FILE_SIZE_LIMIT,
+} from '../constants/image.js';
 
 const Profile = () => {
   const { profile, fetchProfile } = useAuth();
@@ -48,27 +53,21 @@ const Profile = () => {
       return;
     }
 
-    // 허용된 이미지 타입 리스트
-    const allowedTypes = [
-      'image/jpeg',
-      'image/png',
-      'image/webp',
-      'image/heic',
-    ];
     const isHEIC =
       selectedFile.name.toLowerCase().endsWith('.heic') ||
       selectedFile.type === 'image/heic';
 
-    if (!allowedTypes.includes(selectedFile.type) && !isHEIC) {
+    if (!ALLOWED_IMAGE_TYPES.includes(selectedFile.type) && !isHEIC) {
       alert('JPG, PNG, WebP, HEIC 파일만 업로드할 수 있습니다.');
       e.target.value = '';
       return;
     }
 
-    // 용량 10MB 초과 시 알림 이후 종료
-    const maxOriginalSize = 10 * 1024 * 1024;
-    if (selectedFile.size > maxOriginalSize) {
-      alert('프로필 사진은 10MB를 초과할 수 없습니다.');
+    // 용량 초과 시 알림 이후 종료
+    if (selectedFile.size > FILE_SIZE_LIMIT) {
+      alert(
+        `프로필 사진은 ${FILE_SIZE_LIMIT / (1024 * 1024)}MB를 초과할 수 없습니다.`
+      );
       e.target.value = '';
       return;
     }
@@ -101,9 +100,7 @@ const Profile = () => {
     try {
       // 압축 옵션 설정
       const compressOptions = {
-        maxSizeMB: 1, // 최대 용량 1MB로 압축
-        maxWidthOrHeight: 800, // 가로세로 최대 800px (프로필용)
-        useWebWorker: true, // 웹 워커 사용하여 메인 스레드 방해 금지
+        ...DEFAULT_COMPRESSION_OPTIONS,
       };
 
       // 이미지 압축 진행
