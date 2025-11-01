@@ -6,6 +6,7 @@ import { Camera, Save, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { handleError } from '../utils/errorHandler.js';
 import imageCompression from 'browser-image-compression';
+import heic2any from 'heic2any';
 
 const Profile = () => {
   const { profile, fetchProfile } = useAuth();
@@ -42,29 +43,74 @@ const Profile = () => {
 
   // 이미지 선택 시: 서버 전송 안 함(용량 체크 및 압축/미리보기 생성)
   const handleFileSelect = async (e) => {
-    const file = e.target.files[0];
-    if (!file) {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) {
+      return;
+    }
+
+    // 허용된 이미지 타입 리스트
+    const allowedTypes = [
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'image/heic',
+    ];
+    const isHEIC =
+      selectedFile.name.toLowerCase().endsWith('.heic') ||
+      selectedFile.type === 'image/heic';
+
+    if (!allowedTypes.includes(selectedFile.type) && !isHEIC) {
+      alert('JPG, PNG, WebP, HEIC 파일만 업로드할 수 있습니다.');
+      e.target.value = '';
       return;
     }
 
     // 용량 10MB 초과 시 알림 이후 종료
     const maxOriginalSize = 10 * 1024 * 1024;
-    if (file.size > maxOriginalSize) {
+    if (selectedFile.size > maxOriginalSize) {
       alert('프로필 사진은 10MB를 초과할 수 없습니다.');
       e.target.value = '';
       return;
     }
 
+    let processingFile = selectedFile; // 가공 흐름을 나타냄
+
+    // HEIC 파일인 경우 JPEG로 변환
+    if (isHEIC) {
+      try {
+        const convertedBlob = await heic2any({
+          blob: selectedFile,
+          toType: 'image/jpeg',
+          quality: 0.8,
+        });
+
+        // 변환된 Blob을 File 객체로 새로 만듦 (확장자도 .jpg로 교체)
+        processingFile = new File(
+          [convertedBlob],
+          selectedFile.name.replace(/\.[^/.]+$/, '.jpg'),
+          { type: 'image/jpeg' }
+        );
+      } catch (error) {
+        handleError('아이폰 이미지(HEIC) 변환 중 오류가 발생했습니다.', error);
+        e.target.value = '';
+        return;
+      }
+    }
+
+    // 압축 프로세스
     try {
       // 압축 옵션 설정
-      const options = {
+      const compressOptions = {
         maxSizeMB: 1, // 최대 용량 1MB로 압축
         maxWidthOrHeight: 800, // 가로세로 최대 800px (프로필용)
         useWebWorker: true, // 웹 워커 사용하여 메인 스레드 방해 금지
       };
 
       // 이미지 압축 진행
-      const compressedFile = await imageCompression(file, options);
+      const compressedFile = await imageCompression(
+        processingFile,
+        compressOptions
+      );
       setSelectedFile(compressedFile); // 서버 전송용은 압축된 파일로 저장
 
       // 프리뷰 URL 생성 및 메모리 정리
@@ -77,6 +123,7 @@ const Profile = () => {
       setPreviewUrl(objectUrl);
     } catch (error) {
       handleError('이미지 처리 중 오류가 발생했습니다.', error);
+      e.target.value = '';
     }
   };
 
@@ -154,7 +201,7 @@ const Profile = () => {
               <Camera size={18} />
               <input
                 type="file"
-                accept="image/*"
+                accept="image/jpeg, image/png, image/webp, image/heic"
                 onChange={handleFileSelect}
                 className="hidden"
               />
