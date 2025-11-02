@@ -14,6 +14,8 @@ const postReducer = (state, action) => {
   switch (action.type) {
     case 'POST/SET_POSTS':
       return action.payload;
+    case 'POST/APPEND_POSTS': // 기존 목록 뒤에 추가 (다음 페이지)
+      return [...state, ...action.payload];
     default:
       return state;
   }
@@ -22,13 +24,22 @@ const postReducer = (state, action) => {
 const PostProvider = ({ children }) => {
   const [posts, dispatch] = useReducer(postReducer, []);
 
-  const fetchPosts = useCallback(async () => {
+  const fetchPosts = useCallback(async (page = 0) => {
     try {
-      const data = await postApi.getPosts();
-      dispatch({
-        type: 'POST/SET_POSTS',
-        payload: data,
-      });
+      const data = await postApi.getPosts(page);
+
+      if (page === 0) {
+        dispatch({
+          type: 'POST/SET_POSTS',
+          payload: data,
+        });
+      } else {
+        dispatch({
+          type: 'POST/APPEND_POSTS',
+          payload: data,
+        });
+      }
+      return data;
     } catch (error) {
       handleError('데이터 로드에 실패했습니다.', error);
     }

@@ -1,7 +1,11 @@
-import { supabase } from '../lib/supabase';
+import { supabase } from '../lib/supabase'; // 데이터 전체 조회
 
 // 데이터 전체 조회
-export const getPosts = async () => {
+export const getPosts = async (page = 0) => {
+  const ITEMS_PER_PAGE = 10;
+  const from = page * ITEMS_PER_PAGE;
+  const to = from + ITEMS_PER_PAGE - 1;
+
   const { data, error } = await supabase
     .from('posts')
     .select(
@@ -11,7 +15,9 @@ export const getPosts = async () => {
     `
     )
     .eq('is_deleted', false)
-    .order('created_at', { ascending: false });
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
   if (error) {
     throw error;
   }
