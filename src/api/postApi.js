@@ -37,6 +37,48 @@ export const getPostById = async (id) => {
   return data;
 };
 
+// 전체 게시글 수와 오늘 게시글 수를 한 번에 가져오기
+export const getPostStats = async () => {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  // 전체 카운트
+  const totalCountPromise = supabase
+    .from('posts')
+    .select('*', {
+      count: 'exact',
+      head: true,
+    })
+    .eq('is_deleted', false);
+
+  // 오늘 카운트
+  const todayCountPromise = supabase
+    .from('posts')
+    .select('*', {
+      count: 'exact',
+      head: true,
+    })
+    .eq('is_deleted', false)
+    .gte('created_at', today.toISOString());
+
+  const [totalResponse, todayResponse] = await Promise.all([
+    totalCountPromise,
+    todayCountPromise,
+  ]);
+
+  if (totalResponse.error) {
+    throw totalResponse.error;
+  }
+  if (todayResponse.error) {
+    throw todayResponse.error;
+  }
+
+  return {
+    totalPosts: totalResponse.count,
+    todayPosts: todayResponse.count,
+  };
+};
+
 // 게시글 생성 (Create)
 export const createPost = async (postData) => {
   const { data, error } = await supabase

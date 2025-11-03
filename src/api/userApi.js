@@ -27,6 +27,22 @@ export const getProfileById = async (id) => {
   return data;
 };
 
+// 활동 상태인 유저 수 조회
+export const getActiveUserCount = async () => {
+  const { count, error } = await supabase
+    .from('profiles')
+    .select('*', {
+      count: 'exact',
+      head: true,
+    })
+    .eq('status', 'active'); // 활성 유저만 필터링
+
+  if (error) {
+    throw error;
+  }
+  return count || 0;
+};
+
 // 프로필 정보 업데이트 (닉네임, 소개 등)
 export const updateProfile = async (id, updates) => {
   const { data, error } = await supabase

@@ -7,20 +7,24 @@ import SearchBar from '../components/SearchBar.jsx';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
 import usePosts from '../hooks/usePosts.js';
-import useUsers from '../hooks/useUsers.js';
+import * as postApi from '../api/postApi.js';
+import { handleError } from '../utils/errorHandler.js';
+import * as userApi from '../api/userApi.js';
 
 const Home = () => {
   const { posts = [], isLoading: isPostInitialLoading, refetch } = usePosts();
-  const { users = [], isLoading: isUserLoading } = useUsers();
   const [keyword, setKeyword] = useState('');
+  const [stats, setStats] = useState({
+    totalPosts: 0,
+    todayPosts: 0,
+    activeUserCount: 0,
+  });
 
   const [page, setPage] = useState(0);
   const [hasMore, setHasMore] = useState(true);
   const [isFetching, setIsFetching] = useState(false);
 
   const observerRef = useRef(); // 바닥 감지용
-  // TODO: 추후 API 단에서 필터링하여 최적화 필요
-  const todayTime = new Date().setHours(0, 0, 0, 0);
   const nav = useNavigate();
 
   // 다음 페이지 데이터 로드 함수
@@ -68,18 +72,28 @@ const Home = () => {
     return () => observer.disconnect();
   }, [loadMorePosts, hasMore, isFetching, isPostInitialLoading]);
 
+  // 초기 1회 전체/오늘 게시글 및 활동 유저 카운트를 가져옴
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const [postStats, userCount] = await Promise.all([
+          postApi.getPostStats(),
+          userApi.getActiveUserCount(),
+        ]);
+        setStats({
+          ...postStats,
+          activeUserCount: userCount,
+        });
+      } catch (error) {
+        handleError('통계 데이터 로드에 실패했습니다.', error);
+      }
+    };
+    fetchStats();
+  }, []);
+
   const filteredPosts = posts.filter((post) =>
     post.title.toLowerCase().includes(keyword.toLowerCase())
   );
-
-  const todayPostsCount = posts.filter((post) => {
-    const postDate = new Date(post.created_at).getTime();
-    return postDate >= todayTime;
-  }).length;
-
-  const activeMemberCount = users.filter(
-    (user) => user.status === 'active'
-  ).length;
 
   return (
     <div className="mx-auto max-w-7xl p-12">
@@ -102,20 +116,20 @@ const Home = () => {
       <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
         <StatsCard
           title="전체 게시글"
-          count={posts.length}
+          count={stats.totalPosts}
           icon={FileText}
           variant="blue"
         />
         <StatsCard
           title="오늘 올라온 글"
-          count={todayPostsCount}
+          count={stats.todayPosts}
           icon={Zap}
           variant="orange"
           highlight={true}
         />
         <StatsCard
           title="활동 멤버"
-          count={activeMemberCount}
+          count={stats.activeUserCount}
           icon={Users}
           variant="green"
         />
