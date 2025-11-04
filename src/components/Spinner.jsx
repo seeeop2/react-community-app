@@ -6,6 +6,7 @@ const Spinner = ({ variant = 'primary', size = 'md' }) => {
 
   const spinnerColor = {
     primary: 'border-white border-t-transparent',
+    secondary: 'border-gray-200 border-t-gray-600',
     dangerGhost: 'border-red-600 border-t-transparent',
   };
 
