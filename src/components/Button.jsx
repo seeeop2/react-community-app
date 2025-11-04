@@ -9,13 +9,14 @@ const Button = ({
   variant = 'primary',
   size = 'md',
   fontWeight = 'normal',
+  shape = 'xl',
   fullWidth = false,
   loading = false,
   disabled = false,
+  isSelected = false,
   className = '',
 }) => {
-  const baseStyle =
-    'flex items-center justify-center gap-2 transition-all rounded-xl';
+  const baseStyle = 'flex items-center justify-center gap-2 transition-all';
 
   const variants = {
     primary: 'bg-blue-600 text-white shadow-lg shadow-blue-100',
@@ -23,6 +24,9 @@ const Button = ({
     ghost: 'bg-transparent text-slate-500',
     danger: 'bg-red-600 text-white shadow-lg shadow-red-100',
     dangerGhost: 'bg-transparent text-red-600',
+    chip: isSelected
+      ? 'bg-slate-900 text-white border-slate-900 shadow-md border'
+      : 'bg-white border border-gray-200 text-gray-500',
   };
 
   const interactions = {
@@ -31,11 +35,15 @@ const Button = ({
     ghost: 'hover:bg-slate-50 hover:text-blue-600 active:scale-[0.98]',
     danger: 'hover:bg-red-700 active:scale-[0.98]',
     dangerGhost: 'hover:bg-red-50 active:scale-[0.98]',
+    chip: isSelected
+      ? 'active:scale-[0.95]'
+      : 'hover:bg-gray-50 hover:border-gray-400 active:scale-[0.98]',
   };
 
   const sizes = {
     sm: 'px-3 py-1.5 text-sm',
     md: 'px-5 py-3 text-base',
+    chip: 'px-5 py-2 text-sm',
     lg: 'px-8 py-4 text-lg',
   };
 
@@ -43,7 +51,15 @@ const Button = ({
     normal: 'font-normal',
     medium: 'font-medium',
     bold: 'font-bold',
+    semiBold: 'font-semibold',
     extrabold: 'font-extrabold',
+  };
+
+  const shapes = {
+    pill: 'rounded-full',
+    rounded: 'rounded',
+    md: 'rounded-md',
+    xl: 'rounded-xl',
   };
 
   const disabledStyle =
@@ -57,6 +73,7 @@ const Button = ({
         baseStyle,
         sizes[size],
         fontWeights[fontWeight],
+        shapes[shape],
         fullWidth && 'w-full',
         disabled ? disabledStyle : variants[variant],
         !loading && !disabled && interactions[variant],

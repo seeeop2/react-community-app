@@ -10,10 +10,12 @@ import usePosts from '../hooks/usePosts.js';
 import * as postApi from '../api/postApi.js';
 import { handleError } from '../utils/errorHandler.js';
 import * as userApi from '../api/userApi.js';
+import { FILTER_CATEGORIES } from '../constants/categories.js';
 
 const Home = () => {
   const { posts = [], isLoading: isPostInitialLoading, refetch } = usePosts();
   const [keyword, setKeyword] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('ALL');
   const [stats, setStats] = useState({
     totalPosts: 0,
     todayPosts: 0,
@@ -46,6 +48,7 @@ const Home = () => {
     setIsFetching(false);
   }, [page, isFetching, hasMore, refetch]);
 
+  // 바닥 감지
   useEffect(() => {
     // 초기 로딩 중에는 Observer를 붙이지 않고 기다림
     if (isPostInitialLoading) {
@@ -91,9 +94,21 @@ const Home = () => {
     fetchStats();
   }, []);
 
-  const filteredPosts = posts.filter((post) =>
-    post.title.toLowerCase().includes(keyword.toLowerCase())
-  );
+  // 검색어 + 카테고리 필터링
+  const filteredPosts = posts.filter((post) => {
+    const matchesKeyword = post.title
+      .toLowerCase()
+      .includes(keyword.toLowerCase());
+    const matchesCategory =
+      selectedCategory === 'ALL' || post.category === selectedCategory;
+
+    return matchesKeyword && matchesCategory;
+  });
+
+  // 카테고리 변경 시
+  const handleCategoryChange = (categoryValue) => {
+    setSelectedCategory(categoryValue);
+  };
 
   return (
     <div className="mx-auto max-w-7xl p-12">
@@ -113,6 +128,7 @@ const Home = () => {
         }
       />
 
+      {/* 상단 통계 영역 */}
       <div className="mb-10 grid grid-cols-1 gap-6 md:grid-cols-3">
         <StatsCard
           title="전체 게시글"
@@ -133,6 +149,24 @@ const Home = () => {
           icon={Users}
           variant="green"
         />
+      </div>
+
+      {/* 카테고리 칩 필터 영역 */}
+      <div className="scrollbar-hide mb-6 flex gap-2 overflow-x-auto pb-2">
+        {FILTER_CATEGORIES.map((category) => (
+          <div key={category.value}>
+            <Button
+              variant="chip"
+              isSelected={selectedCategory === category.value}
+              size="chip"
+              fontWeight="semiBold"
+              shape="pill"
+              onClick={() => handleCategoryChange(category.value)}
+            >
+              {category.label}
+            </Button>
+          </div>
+        ))}
       </div>
 
       {/* 게시글 목록 영역 */}

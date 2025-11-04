@@ -13,6 +13,14 @@ export const CATEGORY_LIST = [
   },
 ];
 
+export const FILTER_CATEGORIES = [
+  {
+    value: 'ALL',
+    label: '전체',
+  },
+  ...CATEGORY_LIST,
+];
+
 export const CATEGORY_MAP = CATEGORY_LIST.reduce((map, category) => {
   map[category.value] = category.label;
   return map;
