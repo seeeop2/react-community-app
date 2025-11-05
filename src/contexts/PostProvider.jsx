@@ -1,12 +1,14 @@
 import React, {
   createContext,
   useCallback,
+  useContext,
   useEffect,
   useReducer,
 } from 'react';
 
 import * as postApi from '../api/postApi.js';
 import { handleError } from '../utils/errorHandler.js';
+import { AuthContext } from './AuthProvider.jsx';
 
 export const PostContext = createContext();
 
@@ -23,6 +25,8 @@ const postReducer = (state, action) => {
 
 const PostProvider = ({ children }) => {
   const [posts, dispatch] = useReducer(postReducer, []);
+
+  const { user } = useContext(AuthContext);
 
   const fetchPosts = useCallback(async (page = 0) => {
     try {
@@ -50,12 +54,17 @@ const PostProvider = ({ children }) => {
   }, [fetchPosts]);
 
   const createPost = async ({ title, content, category }) => {
+    if (!user || !user.id) {
+      handleError('로그인이 필요한 서비스입니다.');
+      return;
+    }
+
     try {
       await postApi.createPost({
         title,
         content,
         category,
-        author_id: '7e5dbfde-8074-4e54-8113-838f233c5b88', // 임시로 테스트 유저 고정. TODO: 추후 현재 로그인 유저 정보로 변경
+        author_id: user.id,
         is_deleted: false,
       });
 
