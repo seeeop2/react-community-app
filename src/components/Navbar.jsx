@@ -5,18 +5,16 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth.js';
 
 const Navbar = () => {
-  const { profile } = useAuth();
+  // Hooks
   const nav = useNavigate();
-  const [lastUrl, setLastUrl] = useState(profile?.avatar_url);
+
+  // Custom Hooks
+  const { profile } = useAuth();
+
+  // States & Refs
   const [imageError, setImageError] = useState(false);
 
-  // 렌더링 도중 URL이 바뀌었는지 체크
-  // 유저가 사진을 업로드해서 profile.avatar_url이 바뀌면 에러 상태를 리셋
-  if (profile?.avatar_url !== lastUrl) {
-    setLastUrl(profile?.avatar_url);
-    setImageError(false);
-  }
-
+  //Event Handler
   // 로그아웃 함수
   const handleLogout = async () => {
     if (window.confirm('로그아웃 하시겠습니까?')) {

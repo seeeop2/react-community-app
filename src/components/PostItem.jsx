@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Edit2, MessageSquare, Trash2 } from 'lucide-react';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import { useNavigate } from 'react-router-dom';
@@ -7,16 +7,20 @@ import usePosts from '../hooks/usePosts.js';
 import useAuth from '../hooks/useAuth.js';
 
 const PostItem = ({ post }) => {
-  const [isDeleting, setIsDeleting] = useState(false); // 로딩 상태
-  const { removePost } = usePosts();
-  const { user, isAdmin } = useAuth();
+  // Hooks
   const nav = useNavigate();
 
+  // Custom Hooks
+  const { user, isAdmin } = useAuth();
+  const { removePost, isRemoving } = usePosts();
+
+  // Sync / Derived
   // 권한 체크 변수
   const isAuthor = user?.id === post.author_id; // 내가 쓴 글인가?
   const canEdit = isAuthor; // 수정은 '글쓴이'만 가능
   const canDelete = isAuthor || isAdmin; // 삭제는 '글쓴이' 혹은 '관리자' 가능
 
+  // Event Handler
   const handleNavigateDetail = () => {
     nav(`/post/${post.id}`);
   };
@@ -31,15 +35,8 @@ const PostItem = ({ post }) => {
     if (
       window.confirm('정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.')
     ) {
-      setIsDeleting(true);
-      try {
-        await removePost(post.id);
-        alert('삭제되었습니다.');
-      } catch (error) {
-        // 에러 알림은 PostProvider의 handleError에서 처리함
-      } finally {
-        setIsDeleting(false);
-      }
+      await removePost(post.id);
+      alert('삭제되었습니다.');
     }
   };
 
@@ -89,7 +86,7 @@ const PostItem = ({ post }) => {
           {canDelete && (
             <button
               className="p-2 text-slate-400 transition-colors hover:text-red-500"
-              disabled={isDeleting}
+              disabled={isRemoving}
               onClick={handleDelete}
             >
               <Trash2 size={16} />

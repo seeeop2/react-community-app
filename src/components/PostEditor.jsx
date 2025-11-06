@@ -3,8 +3,8 @@ import { CATEGORY_LIST } from '../constants/categories.js';
 import { Send } from 'lucide-react';
 import Button from './Button.jsx';
 
-const PostEditor = ({ initData, onSubmit, submitButtonText }) => {
-  const [isLoading, setIsLoading] = useState(false);
+const PostEditor = ({ initData, onSubmit, submitButtonText, isSubmitting }) => {
+  // States & Refs
   const [input, setInput] = useState(
     initData || {
       title: '',
@@ -15,6 +15,7 @@ const PostEditor = ({ initData, onSubmit, submitButtonText }) => {
   const titleRef = useRef(null);
   const contentRef = useRef(null);
 
+  // Event Handler
   const onChangeInput = (e) => {
     let name = e.target.name;
     let value = e.target.value;
@@ -35,15 +36,7 @@ const PostEditor = ({ initData, onSubmit, submitButtonText }) => {
       return contentRef.current.focus();
     }
 
-    setIsLoading(true);
-
-    try {
-      await onSubmit(input);
-    } catch (error) {
-      // 에러 알림은 PostProvider의 handleError에서 처리함
-    } finally {
-      setIsLoading(false);
-    }
+    await onSubmit(input);
   };
 
   return (
@@ -86,7 +79,7 @@ const PostEditor = ({ initData, onSubmit, submitButtonText }) => {
       <Button
         fontWeight="bold"
         fullWidth={true}
-        loading={isLoading}
+        loading={isSubmitting}
         onClick={handleSubmit}
       >
         <Send size={18} /> {submitButtonText}

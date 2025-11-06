@@ -1,6 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth.js';
-import * as userApi from '../api/userApi.js';
 import Button from '../components/Button.jsx';
 import { Camera, Save, User } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
@@ -12,32 +11,38 @@ import {
   DEFAULT_COMPRESSION_OPTIONS,
   FILE_SIZE_LIMIT,
 } from '../constants/image.js';
+import { useUpdateProfile } from '../hooks/useUpdateProfile.js';
 
 const Profile = () => {
-  const { profile, fetchProfile } = useAuth();
+  // Hooks
   const nav = useNavigate();
 
+  // Custom Hooks
+  const { profile } = useAuth();
+  const { mutateAsync: updateProfile, isPending: isUpdating } =
+    useUpdateProfile();
+
+  // States & Refs
   const [formData, setFormData] = useState({
-    username: '',
-    bio: '',
+    username: profile?.username || '',
+    bio: profile?.bio || '',
   });
-  const [isUpdating, setIsUpdating] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null); // 실제 파일 객체
+  const [previewUrl, setPreviewUrl] = useState(null); // 미리보기 URL
+  const [prevProfile, setPrevProfile] = useState(profile);
 
-  // 실제 파일 객체와 미리보기 URL 상태
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [previewUrl, setPreviewUrl] = useState(null);
+  // Sync / Derived
+  // profile 데이터가 비어있다가 채워졌을 때(동기화)
+  if (profile !== prevProfile) {
+    setPrevProfile(profile);
+    setFormData({
+      username: profile?.username || '',
+      bio: profile?.bio || '',
+    });
+    setPreviewUrl(profile?.avatar_url || null);
+  }
 
-  // 초기 데이터 세팅
-  useEffect(() => {
-    if (profile) {
-      setFormData({
-        username: profile.username || '',
-        bio: profile.bio || '',
-      });
-      setPreviewUrl(profile.avatar_url || null); // 기존 이미지 있으면 보여줌
-    }
-  }, [profile]);
-
+  // Event Handler
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -131,33 +136,22 @@ const Profile = () => {
       return alert('닉네임을 입력해주세요.');
     }
 
-    setIsUpdating(true);
     try {
-      let finalAvatarUrl = profile.avatar_url;
-
-      // 이미지 업로드 (선택된 파일이 있을 때만)
-      if (selectedFile) {
-        finalAvatarUrl = await userApi.uploadAvatar(
-          profile.id,
-          selectedFile,
-          profile.avatar_url
-        );
-      }
-
-      // DB 업데이트 (닉네임 + 자기소개 + 사진 URL)
-      await userApi.updateProfile(profile.id, {
-        ...formData,
-        avatar_url: finalAvatarUrl,
+      await updateProfile({
+        userId: profile.id,
+        formData,
+        selectedFile,
+        currentAvatarUrl: profile.avatar_url,
       });
 
-      await fetchProfile(profile.id);
-      setSelectedFile(null); // 전송 완료 후 초기화
+      setSelectedFile(null);
+      if (previewUrl?.startsWith('blob:')) {
+        URL.revokeObjectURL(previewUrl);
+      }
+
+      alert('프로필이 저장되었습니다!');
       nav('/');
-    } catch (error) {
-      handleError('프로필 설정 저장에 실패했습니다.', error);
-    } finally {
-      setIsUpdating(false);
-    }
+    } catch (error) {}
   };
 
   return (

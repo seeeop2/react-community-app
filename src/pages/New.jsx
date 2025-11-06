@@ -6,16 +6,16 @@ import Button from '../components/Button.jsx';
 import usePosts from '../hooks/usePosts.js';
 
 const New = () => {
-  const { createPost } = usePosts();
+  // Hooks
   const nav = useNavigate();
 
+  // Custom Hooks
+  const { createPost, isCreating } = usePosts();
+
+  // Event Handler
   const handleSubmit = async (input) => {
-    try {
-      await createPost({ ...input });
-      nav('/', { replace: true });
-    } catch (error) {
-      console.error('제출 중 에러 발생:', error);
-    }
+    await createPost({ ...input });
+    nav('/', { replace: true });
   };
 
   const handleCancel = () => {
@@ -31,7 +31,11 @@ const New = () => {
       </Button>
 
       <h2 className="mb-8 text-3xl font-extrabold">새 글 쓰기</h2>
-      <PostEditor submitButtonText="작성 완료하기" onSubmit={handleSubmit} />
+      <PostEditor
+        submitButtonText="작성 완료하기"
+        onSubmit={handleSubmit}
+        isSubmitting={isCreating}
+      />
     </div>
   );
 };

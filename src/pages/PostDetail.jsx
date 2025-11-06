@@ -9,30 +9,49 @@ import usePosts from '../hooks/usePosts.js';
 import useAuth from '../hooks/useAuth.js';
 
 const PostDetail = () => {
+  // Params
   const { id } = useParams();
-  const { removePost } = usePosts();
-  const { user } = useAuth();
+
+  // Hooks
   const nav = useNavigate();
+
+  // Custom Hooks
+  const { user } = useAuth();
+  const { removePost } = usePosts();
+  const { data: post, isLoading, isError } = usePost(id);
+
+  // States & Refs
   const [isProcessing, setIsProcessing] = useState(false);
 
-  const { post, isLoading } = usePost(id);
-
+  // 조건부 렌더링
   if (isLoading) {
-    return <div>로딩 중...</div>;
+    return (
+      <div className="py-20 text-center text-lg text-gray-500">
+        데이터를 불러오는 중...
+      </div>
+    );
   }
 
-  if (!post) {
-    return <div>게시글을 찾을 수 없습니다.</div>;
+  if (!post || isError) {
+    return (
+      <div className="py-20 text-center">
+        <p className="mb-4 text-gray-500">
+          게시글을 찾을 수 없거나 삭제되었습니다.
+        </p>
+        <Button onClick={() => nav('/')}>목록으로 돌아가기</Button>
+      </div>
+    );
   }
 
+  // 가져온 데이터 가공 및 변수 할당
   const isAuthor = user?.id === post.author_id;
-
   const formattedDate = new Date(post.created_at).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
 
+  // Event Handler
   const onClickDelete = async () => {
     if (
       window.confirm('정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.')
@@ -42,7 +61,6 @@ const PostDetail = () => {
         await removePost(post.id); // 비동기 작업 시 await
         nav('/', { replace: true });
       } catch (error) {
-        // 에러 알림은 PostProvider의 handleError에서 처리함
       } finally {
         setIsProcessing(false); // 성공/실패 여부와 관계없이 로딩 종료
       }

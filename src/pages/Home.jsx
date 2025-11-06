@@ -17,24 +17,21 @@ const Home = () => {
   // Hooks
   const nav = useNavigate();
 
-  // Refs
-  const observerRef = useRef(); // 바닥 감지용
+  // Custom Hooks
+  const { posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    usePosts();
 
-  // Local States - 필터/검색 관련
+  // States (필터/검색 관련) & Refs
+  const observerRef = useRef(); // 바닥 감지용
   const [keyword, setKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('ALL');
-
-  // Server Logic / Data States
-  const { posts = [], isLoading: isPostInitialLoading, refetch } = usePosts();
-  const [page, setPage] = useState(0);
-  const [hasMore, setHasMore] = useState(true);
-  const [isFetching, setIsFetching] = useState(false);
   const [stats, setStats] = useState({
     totalPosts: 0,
     todayPosts: 0,
     activeUserCount: 0,
   });
 
+  // Sync / Derived
   // 검색어 + 카테고리 필터링
   const filteredPosts = posts.filter((post) => {
     const matchesKeyword = post.title
@@ -47,40 +44,30 @@ const Home = () => {
   });
 
   // 다음 페이지 데이터 로드 함수
-  const loadMorePosts = useCallback(async () => {
-    if (isFetching || !hasMore) {
-      return;
+  const loadMorePosts = useCallback(() => {
+    if (hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
     }
+  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
-    setIsFetching(true);
-    const nextPage = page + 1;
-    const newData = await refetch(nextPage);
-
-    // 받아온 데이터가 없거나 10개 미만이면 더 이상 데이터가 없는 것으로 판단
-    if (!newData || newData.length < 10) {
-      setHasMore(false);
-    }
-
-    setPage(nextPage);
-    setIsFetching(false);
-  }, [page, isFetching, hasMore, refetch]);
-
+  // Event Handler
   // 카테고리 변경 시
   const handleCategoryChange = (categoryValue) => {
     setSelectedCategory(categoryValue);
   };
 
+  // useEffect
   // 바닥 감지
   useEffect(() => {
     // 초기 로딩 중에는 Observer를 붙이지 않고 기다림
-    if (isPostInitialLoading) {
+    if (isLoading) {
       return;
     }
 
     const observer = new IntersectionObserver(
       (entries) => {
         // 요소가 화면에 나타나고, 데이터가 더 있고, 현재 로딩 중이 아닐 때
-        if (entries[0].isIntersecting && hasMore && !isFetching) {
+        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
           loadMorePosts();
         }
       },
@@ -95,7 +82,7 @@ const Home = () => {
     }
 
     return () => observer.disconnect();
-  }, [loadMorePosts, hasMore, isFetching, isPostInitialLoading]);
+  }, [loadMorePosts, hasNextPage, isFetchingNextPage, isLoading]);
 
   // 초기 1회 전체/오늘 게시글 및 활동 유저 카운트를 가져옴
   useEffect(() => {
@@ -176,7 +163,7 @@ const Home = () => {
       </div>
 
       {/* 게시글 목록 영역 */}
-      {isPostInitialLoading && page === 0 ? (
+      {isLoading ? (
         <div className="py-20 text-center text-gray-500">
           데이터를 불러오는 중입니다...
         </div>
@@ -192,14 +179,14 @@ const Home = () => {
             ref={observerRef}
             className="py-10 text-center text-sm text-gray-400"
           >
-            {isFetching ? (
+            {isFetchingNextPage ? (
               <div className="flex items-center justify-center gap-3">
                 <Spinner variant="secondary" size="md" />
                 <span className="font-medium text-slate-600">
                   불러오는 중...
                 </span>
               </div>
-            ) : !hasMore ? (
+            ) : !hasNextPage ? (
               '모든 게시글을 다 읽으셨습니다.'
             ) : (
               ''
