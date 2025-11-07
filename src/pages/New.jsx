@@ -3,14 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
-import usePosts from '../hooks/usePosts.js';
+import useCreatePost from '../hooks/useCreatePost.js';
 
 const New = () => {
   // Hooks
   const nav = useNavigate();
 
   // Custom Hooks
-  const { createPost, isCreating } = usePosts();
+  const { mutateAsync: createPost, isPending: isCreating } = useCreatePost();
 
   // Event Handler
   const handleSubmit = async (input) => {

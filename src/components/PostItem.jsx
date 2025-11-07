@@ -3,8 +3,8 @@ import { Edit2, MessageSquare, Trash2 } from 'lucide-react';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import { useNavigate } from 'react-router-dom';
 import Badge from './Badge.jsx';
-import usePosts from '../hooks/usePosts.js';
 import useAuth from '../hooks/useAuth.js';
+import useDeletePost from '../hooks/useDeletePost.js';
 
 const PostItem = ({ post }) => {
   // Hooks
@@ -12,7 +12,7 @@ const PostItem = ({ post }) => {
 
   // Custom Hooks
   const { user, isAdmin } = useAuth();
-  const { removePost, isRemoving } = usePosts();
+  const { mutateAsync: removePost, isPending: isRemoving } = useDeletePost();
 
   // Sync / Derived
   // 권한 체크 변수

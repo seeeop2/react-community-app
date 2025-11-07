@@ -1,29 +1,24 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import { ArrowLeft, Calendar, Edit3, Tag, Trash2 } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import Badge from '../components/Badge.jsx';
 import usePost from '../hooks/usePost.js';
-import usePosts from '../hooks/usePosts.js';
 import useAuth from '../hooks/useAuth.js';
+import useDeletePost from '../hooks/useDeletePost.js';
 
 const PostDetail = () => {
-  // Params
-  const { id } = useParams();
-
   // Hooks
+  const { id } = useParams();
   const nav = useNavigate();
 
   // Custom Hooks
   const { user } = useAuth();
-  const { removePost } = usePosts();
   const { data: post, isLoading, isError } = usePost(id);
+  const { mutateAsync: removePost, isPending: isRemoving } = useDeletePost();
 
-  // States & Refs
-  const [isProcessing, setIsProcessing] = useState(false);
-
-  // 조건부 렌더링
+  // Early Return (데이터 로드 전)
   if (isLoading) {
     return (
       <div className="py-20 text-center text-lg text-gray-500">
@@ -43,6 +38,7 @@ const PostDetail = () => {
     );
   }
 
+  // Sync / Derived
   // 가져온 데이터 가공 및 변수 할당
   const isAuthor = user?.id === post.author_id;
   const formattedDate = new Date(post.created_at).toLocaleDateString('ko-KR', {
@@ -56,14 +52,10 @@ const PostDetail = () => {
     if (
       window.confirm('정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.')
     ) {
-      setIsProcessing(true);
       try {
         await removePost(post.id); // 비동기 작업 시 await
         nav('/', { replace: true });
-      } catch (error) {
-      } finally {
-        setIsProcessing(false); // 성공/실패 여부와 관계없이 로딩 종료
-      }
+      } catch (error) {}
     }
   };
 
@@ -99,7 +91,7 @@ const PostDetail = () => {
 
             <Button
               variant="dangerGhost"
-              loading={isProcessing}
+              loading={isRemoving}
               onClick={onClickDelete}
             >
               <Trash2 size={16} /> 삭제
