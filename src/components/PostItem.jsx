@@ -4,7 +4,7 @@ import { CATEGORY_MAP } from '../constants/categories.js';
 import { useNavigate } from 'react-router-dom';
 import Badge from './Badge.jsx';
 import useAuth from '../hooks/useAuth.js';
-import useDeletePost from '../hooks/useDeletePost.js';
+import useDeletePost from '../hooks/mutations/useDeletePost.js';
 
 const PostItem = ({ post }) => {
   // Hooks

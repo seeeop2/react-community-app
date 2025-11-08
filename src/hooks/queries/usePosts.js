@@ -1,5 +1,5 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
-import * as postApi from '../api/postApi.js';
+import * as postApi from '../../api/postApi.js';
 
 const usePosts = () => {
   // 게시글 목록 조회 (무한 스크롤)

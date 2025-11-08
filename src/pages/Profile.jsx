@@ -11,7 +11,7 @@ import {
   DEFAULT_COMPRESSION_OPTIONS,
   FILE_SIZE_LIMIT,
 } from '../constants/image.js';
-import { useUpdateProfile } from '../hooks/useUpdateProfile.js';
+import { useUpdateProfile } from '../hooks/mutations/useUpdateProfile.js';
 
 const Profile = () => {
   // Hooks

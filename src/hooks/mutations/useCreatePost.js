@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import * as postApi from '../api/postApi.js';
-import { handleError } from '../utils/errorHandler.js';
-import useAuth from './useAuth.js';
+import * as postApi from '../../api/postApi.js';
+import { handleError } from '../../utils/errorHandler.js';
+import useAuth from '../useAuth.js';
 
 const useCreatePost = () => {
   const queryClient = useQueryClient();

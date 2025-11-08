@@ -1,6 +1,6 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
-import useProfile from '../hooks/useProfile.js';
+import useProfile from '../hooks/queries/useProfile.js';
 
 export const AuthContext = createContext();
 

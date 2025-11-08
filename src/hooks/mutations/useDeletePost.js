@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import * as postApi from '../api/postApi.js';
-import { handleError } from '../utils/errorHandler.js';
+import * as postApi from '../../api/postApi.js';
+import { handleError } from '../../utils/errorHandler.js';
 
 const useDeletePost = () => {
   const queryClient = useQueryClient();

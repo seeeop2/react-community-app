@@ -1,4 +1,4 @@
-import * as postApi from '../api/postApi.js';
+import * as postApi from '../../api/postApi.js';
 import { useQuery } from '@tanstack/react-query';
 
 const usePost = (id) => {

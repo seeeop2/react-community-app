@@ -6,7 +6,7 @@ import PostList from '../components/PostList.jsx';
 import SearchBar from '../components/SearchBar.jsx';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
-import usePosts from '../hooks/usePosts.js';
+import usePosts from '../hooks/queries/usePosts.js';
 import * as postApi from '../api/postApi.js';
 import { handleError } from '../utils/errorHandler.js';
 import * as userApi from '../api/userApi.js';

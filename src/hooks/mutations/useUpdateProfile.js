@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import * as userApi from '../api/userApi.js';
-import { handleError } from '../utils/errorHandler.js';
+import * as userApi from '../../api/userApi.js';
+import { handleError } from '../../utils/errorHandler.js';
 
 export const useUpdateProfile = () => {
   const queryClient = useQueryClient();

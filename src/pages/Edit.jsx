@@ -3,9 +3,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
-import usePost from '../hooks/usePost.js';
-import usePosts from '../hooks/usePosts.js';
+import usePost from '../hooks/queries/usePost.js';
 import useAuth from '../hooks/useAuth.js';
+import { useUpdatePost } from '../hooks/mutations/useUpdatePost.js';
 
 const Edit = () => {
   // Hooks
@@ -14,7 +14,8 @@ const Edit = () => {
 
   // Custom Hooks
   const { user } = useAuth();
-  const { editPost, isEditing } = usePosts();
+  const { mutateAsync: editPost, isPending: isEditing } = useUpdatePost();
+
   const { data: post, isLoading, isError } = usePost(id);
 
   // Early Return 첫 번째 (데이터 로드 전)

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
-import useCreatePost from '../hooks/useCreatePost.js';
+import useCreatePost from '../hooks/mutations/useCreatePost.js';
 
 const New = () => {
   // Hooks
