@@ -10,8 +10,13 @@ export const getPosts = async (page = 0) => {
     .from('posts')
     .select(
       `
-    *,
-    author:profiles(username, role)
+    id, 
+    title, 
+    category, 
+    author_id,
+    created_at, 
+    is_deleted,
+    author:profiles(username)
     `
     )
     .eq('is_deleted', false)
@@ -28,7 +33,17 @@ export const getPosts = async (page = 0) => {
 export const getPostById = async (id) => {
   const { data, error } = await supabase
     .from('posts')
-    .select('*')
+    .select(
+      `
+    id, 
+    title, 
+    content, 
+    category, 
+    author_id, 
+    created_at, 
+    is_deleted
+    `
+    )
     .eq('id', id)
     .single();
   if (error) {

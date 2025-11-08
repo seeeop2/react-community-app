@@ -4,7 +4,14 @@ import { supabase } from '../lib/supabase';
 export const getProfiles = async () => {
   const { data, error } = await supabase
     .from('profiles')
-    .select('*')
+    .select(
+      `
+    id,
+    username,
+    avatar_url,
+    role
+    `
+    )
     .eq('status', 'active');
 
   if (error) {
@@ -17,7 +24,15 @@ export const getProfiles = async () => {
 export const getProfileById = async (id) => {
   const { data, error } = await supabase
     .from('profiles')
-    .select('*')
+    .select(
+      `
+    id,
+    username,
+    avatar_url,
+    bio,
+    role
+    `
+    )
     .eq('id', id)
     .single();
 
