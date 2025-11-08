@@ -1,8 +1,7 @@
-import React, { createContext, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
 import useProfile from '../hooks/queries/useProfile.js';
-
-export const AuthContext = createContext();
+import { AuthContext } from './AuthContext.js';
 
 export const AuthProvider = ({ children }) => {
   const [session, setSession] = useState(null);
