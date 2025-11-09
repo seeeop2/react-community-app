@@ -8,6 +8,7 @@ import usePost from '../hooks/queries/usePost.js';
 import useAuth from '../hooks/useAuth.js';
 import useDeletePost from '../hooks/mutations/useDeletePost.js';
 import CommentInput from '../components/CommentInput.jsx';
+import CommentList from '../components/CommentList.jsx';
 
 const PostDetail = () => {
   // Hooks
@@ -103,6 +104,7 @@ const PostDetail = () => {
       <section className="mt-0 border-t border-slate-100 pt-6">
         <h3 className="mb-6 text-xl font-bold text-slate-900">댓글</h3>
         <CommentInput postId={id} />
+        <CommentList postId={id} />
       </section>
     </div>
   );

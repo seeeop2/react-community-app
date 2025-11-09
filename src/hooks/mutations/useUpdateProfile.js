@@ -31,11 +31,14 @@ export const useUpdateProfile = () => {
       });
     },
     onSuccess: (data, variables) => {
-      // 내 정보와 게시글 목록 캐시 모두 무효화
+      // 내 정보 캐시 무효화
       queryClient.invalidateQueries({
         queryKey: ['profile', variables.userId],
       });
+      // 게시글 목록 캐시 무효화
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+      // 댓글 목록 캐시 무효화
+      queryClient.invalidateQueries({ queryKey: ['comments'] });
     },
     onError: (err) => handleError('프로필 저장에 실패했습니다.', err),
   });

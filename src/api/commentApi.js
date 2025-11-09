@@ -1,6 +1,30 @@
 import {supabase} from '../lib/supabase.js';
 
 /**
+ * 특정 게시글의 댓글 목록 조회
+ */
+export const getComments = async (postId) => {
+  const { data, error } = await supabase
+    .from('comments')
+    .select(
+      `
+      id,
+      content,
+      created_at,
+      is_edited,
+      author:profiles(username, avatar_url)
+    `
+    )
+    .eq('post_id', postId)
+    .order('created_at', { ascending: true }); // 과거순
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+/**
  * 댓글 작성
  */
 export const createComment = async (commentData) => {
