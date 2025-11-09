@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Clock, User } from 'lucide-react';
+import { formatRelativeTime } from '../utils/date.js';
 
 const CommentItem = ({ comment }) => {
   const [imageError, setImageError] = useState(false);
@@ -30,7 +31,7 @@ const CommentItem = ({ comment }) => {
           </span>
           <div className="flex items-center gap-1 text-[11px] text-slate-400">
             <Clock size={12} />
-            {new Date(comment.created_at).toLocaleDateString()}
+            {formatRelativeTime(comment.created_at)}
           </div>
         </div>
         <p className="whitespace-pre-wrap text-[15px] leading-relaxed text-slate-600">
