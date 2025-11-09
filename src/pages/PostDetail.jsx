@@ -7,6 +7,7 @@ import Badge from '../components/Badge.jsx';
 import usePost from '../hooks/queries/usePost.js';
 import useAuth from '../hooks/useAuth.js';
 import useDeletePost from '../hooks/mutations/useDeletePost.js';
+import CommentInput from '../components/CommentInput.jsx';
 
 const PostDetail = () => {
   // Hooks
@@ -99,6 +100,10 @@ const PostDetail = () => {
           </div>
         )}
       </div>
+      <section className="mt-0 border-t border-slate-100 pt-6">
+        <h3 className="mb-6 text-xl font-bold text-slate-900">댓글</h3>
+        <CommentInput postId={id} />
+      </section>
     </div>
   );
 };
