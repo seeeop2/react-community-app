@@ -27,7 +27,7 @@ const CommentList = ({ postId }) => {
   return (
     <div className="space-y-6">
       {comments.map((comment) => (
-        <CommentItem key={comment.id} comment={comment} />
+        <CommentItem key={comment.id} comment={comment} postId={postId} />
       ))}
     </div>
   );

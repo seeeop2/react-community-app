@@ -12,6 +12,7 @@ export const getComments = async (postId) => {
       content,
       created_at,
       is_edited,
+      author_id,
       author:profiles(username, avatar_url)
     `
     )
@@ -31,6 +32,26 @@ export const createComment = async (commentData) => {
   const { data, error } = await supabase
     .from('comments')
     .insert([commentData])
+    .select()
+    .single();
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};
+
+/**
+ * 댓글 수정
+ */
+export const updateComment = async (id, content) => {
+  const { data, error } = await supabase
+    .from('comments')
+    .update({
+      content,
+      is_edited: true,
+    })
+    .eq('id', id)
     .select()
     .single();
 
