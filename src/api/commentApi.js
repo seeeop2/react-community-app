@@ -60,3 +60,15 @@ export const updateComment = async (id, content) => {
   }
   return data;
 };
+
+/**
+ * 댓글 삭제
+ */
+export const deleteComment = async (id) => {
+  const { data, error } = await supabase.from('comments').delete().eq('id', id);
+
+  if (error) {
+    throw error;
+  }
+  return data;
+};

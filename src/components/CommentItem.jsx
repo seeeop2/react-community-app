@@ -1,14 +1,16 @@
 import React, { useState } from 'react';
-import { Clock, Edit2, User } from 'lucide-react';
+import { Clock, Edit2, Trash2, User } from 'lucide-react';
 import { formatRelativeTime } from '../utils/date.js';
 import useAuth from '../hooks/useAuth.js';
 import { useUpdateComment } from '../hooks/mutations/useUpdateComment.js';
+import { useDeleteComment } from '../hooks/mutations/useDeleteComment.js';
 
 const CommentItem = ({ comment, postId }) => {
   // Custom Hooks
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const { mutate: updateComment, isPending: isUpdating } =
     useUpdateComment(postId);
+  const { mutate: deleteComment } = useDeleteComment(postId);
 
   // States & Refs
   const [isEditing, setIsEditing] = useState(false);
@@ -18,7 +20,8 @@ const CommentItem = ({ comment, postId }) => {
   // Sync / Derived
   // 권한 체크 변수
   const isMyComment = user?.id === comment.author_id;
-  const canEdit = isMyComment; // 수정은 '글쓴이'만 가능
+  const canEdit = isMyComment; // 수정은 '댓글 작성자'만 가능
+  const canDelete = isMyComment || isAdmin; // 삭제는 '댓글 작성자' 혹은 '관리자' 가능
 
   // Event Handler
   const handleInputChange = (e) => {
@@ -39,6 +42,12 @@ const CommentItem = ({ comment, postId }) => {
         onSuccess: () => setIsEditing(false),
       }
     );
+  };
+
+  const handleDelete = () => {
+    if (window.confirm('해당 댓글을 삭제하시겠습니까?')) {
+      deleteComment(comment.id);
+    }
   };
 
   return (
@@ -84,6 +93,17 @@ const CommentItem = ({ comment, postId }) => {
                     title="댓글 수정"
                   >
                     <Edit2 size={13} />
+                  </button>
+                )}
+
+                {/* 삭제 버튼: 댓글 작성자 또는 관리자 */}
+                {canDelete && (
+                  <button
+                    onClick={handleDelete}
+                    className="rounded-md p-1 text-slate-400 hover:bg-red-50 hover:text-red-500"
+                    title="댓글 삭제"
+                  >
+                    <Trash2 size={13} />
                   </button>
                 )}
               </div>
