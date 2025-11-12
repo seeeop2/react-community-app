@@ -1,12 +1,36 @@
 import React, { useState } from 'react';
 import Button from './Button.jsx';
 import useCreateComment from '../hooks/mutations/useCreateComment.js';
+import useAuth from '../hooks/useAuth.js';
+import { Link } from 'react-router-dom';
 
 const CommentInput = ({ postId }) => {
-  const [content, setContent] = useState('');
+  // Custom Hooks
+  const { user } = useAuth();
   const { mutateAsync: createComment, isPending: isCreating } =
     useCreateComment(postId);
 
+  // States & Refs
+  const [content, setContent] = useState('');
+
+  // Early Return
+  if (!user) {
+    return (
+      <div className="mb-8 rounded-lg border border-dashed border-slate-200 bg-slate-50 p-4 text-center">
+        <p className="mb-2 text-sm text-slate-500">
+          댓글을 작성하려면 로그인이 필요합니다.
+        </p>
+        <Link
+          to="/auth"
+          className="text-sm font-bold text-blue-600 hover:underline"
+        >
+          로그인하러 가기 →
+        </Link>
+      </div>
+    );
+  }
+
+  // Event Handlers
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!content.trim()) {

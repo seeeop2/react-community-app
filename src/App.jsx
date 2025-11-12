@@ -18,27 +18,16 @@ function App() {
       <Routes>
         <Route path="/auth" element={<AuthPage />} />
 
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Home />
-            </ProtectedRoute>
-          }
-        />
+        {/* 누구나 볼 수 있는 페이지 */}
+        <Route path="/" element={<Home />} />
+        <Route path="/post/:id" element={<PostDetail />} />
+
+        {/* 로그인이 필요한 페이지 */}
         <Route
           path="/new"
           element={
             <ProtectedRoute>
               <New />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/post/:id"
-          element={
-            <ProtectedRoute>
-              <PostDetail />
             </ProtectedRoute>
           }
         />

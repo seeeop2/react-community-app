@@ -12,12 +12,14 @@ import { handleError } from '../utils/errorHandler.js';
 import * as userApi from '../api/userApi.js';
 import Spinner from '../components/Spinner.jsx';
 import { FILTER_CATEGORIES } from '../constants/categories.js';
+import useAuth from '../hooks/useAuth.js';
 
 const Home = () => {
   // Hooks
   const nav = useNavigate();
 
   // Custom Hooks
+  const { profile } = useAuth();
   const { posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
     usePosts();
 
@@ -54,6 +56,20 @@ const Home = () => {
   // 카테고리 변경 시
   const handleCategoryChange = (categoryValue) => {
     setSelectedCategory(categoryValue);
+  };
+
+  const handleNewPost = () => {
+    if (!profile) {
+      if (
+        window.confirm(
+          '로그인이 필요한 기능입니다. 로그인 페이지로 이동할까요?'
+        )
+      ) {
+        nav('/auth');
+      }
+      return;
+    }
+    nav('/new');
   };
 
   // useEffect
@@ -111,11 +127,7 @@ const Home = () => {
         highlightTitle="Board"
         description="자유롭게 의견을 나누는 공간입니다."
         action={
-          <Button
-            fontWeight="bold"
-            fullWidth={true}
-            onClick={() => nav('/new')}
-          >
+          <Button fontWeight="bold" fullWidth={true} onClick={handleNewPost}>
             <Plus size={20} />새 글 쓰기
           </Button>
         }
