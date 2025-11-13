@@ -7,7 +7,7 @@ export const getPosts = async (page = 0) => {
   const to = from + ITEMS_PER_PAGE - 1;
 
   const { data, error } = await supabase
-    .from('posts')
+    .from('posts_with_counts')
     .select(
       `
     id, 
@@ -16,7 +16,8 @@ export const getPosts = async (page = 0) => {
     author_id,
     created_at, 
     is_deleted,
-    author:profiles(username)
+    author,
+    comment_count
     `
     )
     .eq('is_deleted', false)

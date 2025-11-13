@@ -14,7 +14,7 @@ const PostList = ({ posts, searchComponent }) => {
               <th className="px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-400">
                 제목
               </th>
-              <th className="px-8 py-4 text-[11px] font-bold uppercase tracking-widest text-slate-400">
+              <th className="py-4 pl-16 pr-8 text-left text-[11px] font-bold uppercase tracking-widest text-slate-400">
                 작성자
               </th>
               <th className="px-8 py-4 text-right text-[11px] font-bold uppercase tracking-widest text-slate-400">

@@ -1,10 +1,11 @@
-import React from 'react';
-import { Edit2, MessageSquare, Trash2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { Edit2, MessageSquare, Trash2, User } from 'lucide-react';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import { useNavigate } from 'react-router-dom';
 import Badge from './Badge.jsx';
 import useAuth from '../hooks/useAuth.js';
 import useDeletePost from '../hooks/mutations/useDeletePost.js';
+import { cn } from '../utils/cn.js';
 
 const PostItem = ({ post }) => {
   // Hooks
@@ -13,6 +14,9 @@ const PostItem = ({ post }) => {
   // Custom Hooks
   const { user, isAdmin } = useAuth();
   const { mutateAsync: removePost, isPending: isRemoving } = useDeletePost();
+
+  // States & Refs
+  const [imageError, setImageError] = useState(false);
 
   // Sync / Derived
   // 권한 체크 변수
@@ -63,6 +67,22 @@ const PostItem = ({ post }) => {
               >
                 {CATEGORY_MAP[post.category]}
               </Badge>
+
+              {/* 댓글 수 표시 */}
+              <div
+                className={cn(
+                  'flex items-center gap-1 text-[11px] font-bold',
+                  post.comment_count > 0 ? 'text-blue-500' : 'text-slate-400'
+                )}
+              >
+                <MessageSquare
+                  size={12}
+                  fill="currentColor"
+                  fillOpacity={post.comment_count > 0 ? 0.1 : 0}
+                />
+                <span>{post.comment_count}</span>
+              </div>
+
               <span className="text-[10px] text-slate-400">
                 {new Date(post.created_at).toLocaleDateString()}
               </span>
@@ -71,7 +91,25 @@ const PostItem = ({ post }) => {
         </div>
       </td>
       <td className="px-8 py-5 text-sm font-medium text-slate-600">
-        {post.author?.username || '알 수 없음'}
+        <div className="flex items-center gap-2">
+          {/* 아바타 이미지 */}
+          <div className="h-6 w-6 flex-shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-50">
+            {post.author?.avatar_url && !imageError ? (
+              <img
+                src={post.author.avatar_url}
+                className="h-full w-full object-cover"
+                alt={post.author.username}
+                onError={() => setImageError(true)}
+              />
+            ) : (
+              <div className="flex h-full w-full items-center justify-center bg-slate-100 text-slate-400">
+                <User size={14} />
+              </div>
+            )}
+          </div>
+
+          <span>{post.author?.username || '알 수 없음'}</span>
+        </div>
       </td>
       <td className="px-8 py-5">
         <div className="flex translate-x-1 justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
