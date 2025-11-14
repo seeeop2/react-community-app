@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CATEGORY_MAP } from '../constants/categories.js';
-import { ArrowLeft, Calendar, Edit3, Tag, Trash2 } from 'lucide-react';
+import { ArrowLeft, Calendar, Edit3, Tag, Trash2, User } from 'lucide-react';
 import Button from '../components/Button.jsx';
 import Badge from '../components/Badge.jsx';
 import usePost from '../hooks/queries/usePost.js';
@@ -19,6 +19,9 @@ const PostDetail = () => {
   const { user } = useAuth();
   const { data: post, isLoading, isError } = usePost(id);
   const { mutateAsync: removePost, isPending: isRemoving } = useDeletePost();
+
+  // States & Refs
+  const [imageError, setImageError] = useState(false);
 
   // Early Return (데이터 로드 전)
   if (isLoading) {
@@ -68,13 +71,37 @@ const PostDetail = () => {
       </Button>
 
       <div className="rounded-3xl border border-gray-100 bg-white p-10 shadow-sm">
-        <div className="mb-6 flex flex-wrap items-center gap-4 text-sm">
+        <div className="mb-6 flex items-center justify-between text-sm">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-sm">
+                {post.author?.avatar_url && !imageError ? (
+                  <img
+                    src={post.author.avatar_url}
+                    className="h-full w-full object-cover"
+                    alt={post.author.username}
+                    onError={() => setImageError(true)}
+                  />
+                ) : (
+                  <div className="flex h-full w-full items-center justify-center bg-slate-50 text-slate-400">
+                    <User size={22} />
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col">
+                <span className="text-[15px] font-bold text-slate-800">
+                  {post.author?.username || '알 수 없음'}
+                </span>
+                <div className="flex items-center gap-1 text-[12px] font-medium text-gray-400">
+                  <Calendar size={12} /> {formattedDate}
+                </div>
+              </div>
+            </div>
+          </div>
+
           <Badge size="sm" fontWeight="bold">
             <Tag size={14} /> {CATEGORY_MAP[post.category]}
           </Badge>
-          <div className="flex items-center gap-1.5 text-gray-400">
-            <Calendar size={14} /> {formattedDate}
-          </div>
         </div>
 
         <h1 className="mb-8 text-4xl font-extrabold leading-tight text-gray-900">

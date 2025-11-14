@@ -33,7 +33,7 @@ export const getPosts = async (page = 0) => {
 // 데이터 하나 조회
 export const getPostById = async (id) => {
   const { data, error } = await supabase
-    .from('posts')
+    .from('posts_with_counts')
     .select(
       `
     id, 
@@ -42,7 +42,8 @@ export const getPostById = async (id) => {
     category, 
     author_id, 
     created_at, 
-    is_deleted
+    is_deleted,
+    author
     `
     )
     .eq('id', id)
