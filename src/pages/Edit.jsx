@@ -65,11 +65,13 @@ const Edit = () => {
   }
 
   return (
-    <div className="mx-auto max-w-2xl p-12">
+    <div className="mx-auto max-w-2xl p-5 md:p-12">
       <Button variant="ghost" onClick={handleCancel} className="mb-8 px-0">
         <ArrowLeft size={20} /> 이전으로 돌아가기
       </Button>
-      <h2 className="mb-8 text-3xl font-extrabold">글 수정하기</h2>
+      <h2 className="mb-6 text-2xl font-extrabold md:mb-8 md:text-3xl">
+        글 수정하기
+      </h2>
       <PostEditor
         initData={post}
         submitButtonText="수정 완료하기"

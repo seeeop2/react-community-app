@@ -40,12 +40,15 @@ const PostEditor = ({ initData, onSubmit, submitButtonText, isSubmitting }) => {
   };
 
   return (
-    <div className="rounded-3xl border border-gray-100 bg-white p-8 shadow-sm">
-      <label className="mb-2 block text-sm font-semibold">카테고리</label>
+    <div className="rounded-2xl border border-gray-100 bg-white p-5 shadow-sm md:rounded-3xl md:p-8">
+      {/* 카테고리 */}
+      <label className="mb-2 block text-[13px] font-bold text-slate-700 md:text-sm">
+        카테고리
+      </label>
       <select
         value={input.category}
         name="category"
-        className="mb-6 w-full rounded-xl border border-gray-200 p-4"
+        className="transition-focus mb-6 w-full rounded-xl border border-gray-200 bg-slate-50/50 p-3.5 text-sm focus:border-blue-500 focus:outline-none md:p-4 md:text-base"
         onChange={onChangeInput}
       >
         {CATEGORY_LIST.map((category) => (
@@ -55,32 +58,40 @@ const PostEditor = ({ initData, onSubmit, submitButtonText, isSubmitting }) => {
         ))}
       </select>
 
-      <label className="mb-2 block text-sm font-semibold">제목</label>
+      {/* 제목 */}
+      <label className="mb-2 block text-[13px] font-bold text-slate-700 md:text-sm">
+        제목
+      </label>
       <input
         value={input.title}
         name="title"
         ref={titleRef}
-        className="mb-8 w-full rounded-xl border border-gray-200 p-4"
+        className="transition-focus mb-6 w-full rounded-xl border border-gray-200 p-3.5 text-sm focus:border-blue-500 focus:outline-none md:mb-8 md:p-4 md:text-base"
         onChange={onChangeInput}
         placeholder="제목을 입력하세요."
       />
 
-      <label className="mb-2 block text-sm font-semibold">본문</label>
+      {/* 본문 */}
+      <label className="mb-2 block text-[13px] font-bold text-slate-700 md:text-sm">
+        본문
+      </label>
       <textarea
         value={input.content}
         name="content"
         ref={contentRef}
-        className="mb-8 w-full rounded-xl border border-gray-200 p-4"
-        rows="10"
+        className="transition-focus mb-6 min-h-[180px] w-full resize-none rounded-xl border border-gray-200 p-3.5 text-sm focus:border-blue-500 focus:outline-none md:mb-8 md:min-h-[320px] md:p-4 md:text-base"
+        rows="7"
         onChange={onChangeInput}
         placeholder="내용을 입력하세요."
       />
 
+      {/* 전송 버튼 */}
       <Button
         fontWeight="bold"
         fullWidth={true}
         loading={isSubmitting}
         onClick={handleSubmit}
+        className="py-3.5 md:py-4"
       >
         <Send size={18} /> {submitButtonText}
       </Button>

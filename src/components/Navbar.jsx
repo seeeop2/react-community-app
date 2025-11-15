@@ -42,7 +42,7 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-50 border-b border-slate-100 bg-white/80 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-12">
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6 md:px-12">
         {/* 왼쪽: 로고 및 홈 이동 */}
         <div
           className="group flex cursor-pointer items-center gap-2"
@@ -51,19 +51,19 @@ const Navbar = () => {
           <div className="rounded-lg bg-blue-600 p-1.5 transition-transform group-hover:scale-110">
             <LayoutDashboard size={20} className="text-white" />
           </div>
-          <span className="text-xl font-black tracking-tighter text-slate-800">
+          <span className="text-lg font-black tracking-tighter text-slate-800 md:text-xl">
             COMPANY
             <span className="text-blue-600"> HUB</span>
           </span>
         </div>
 
         {/* 오른쪽: 유저 정보 및 메뉴 */}
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-3 md:gap-6">
           {profile ? (
             /* 로그인 된 상태: 기존 유저 정보 + 로그아웃 */
             <>
-              <div className="flex items-center gap-3 border-r border-slate-200 pr-6">
-                <div className="text-right">
+              <div className="flex items-center gap-3 border-r border-slate-200 pr-4 md:pr-6">
+                <div className="hidden text-right sm:block">
                   <p className="text-sm font-bold leading-none text-slate-800">
                     {profile.username}
                   </p>

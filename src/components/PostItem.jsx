@@ -46,19 +46,24 @@ const PostItem = ({ post }) => {
 
   return (
     <tr
-      className="group cursor-pointer transition-all hover:bg-blue-50/30"
+      className="group flex cursor-pointer flex-col border-b border-slate-50 p-5 transition-all hover:bg-blue-50/30 md:table-row md:border-none md:p-0"
       onClick={handleNavigateDetail}
     >
-      <td className="px-8 py-5">
-        <div className="flex items-center gap-4">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-400 shadow-sm transition-all group-hover:bg-blue-600 group-hover:text-white">
+      {/* 제목 및 메타 정보 영역 */}
+      <td className="w-full min-w-0 px-0 py-0 md:w-full md:px-8 md:py-5">
+        <div className="flex min-w-0 items-start gap-0 md:items-center md:gap-4">
+          {/* 아이콘 박스 */}
+          <div className="hidden h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-slate-400 shadow-sm transition-all group-hover:bg-blue-600 group-hover:text-white md:flex">
             <MessageSquare size={18} />
           </div>
-          <div>
-            <p className="font-semibold text-slate-800 transition-colors group-hover:text-blue-600">
+
+          <div className="min-w-0 flex-1 overflow-hidden">
+            <p className="truncate text-[15px] font-semibold text-slate-800 transition-colors group-hover:text-blue-600 md:text-base">
               {post.title}
             </p>
-            <div className="mt-0.5 flex items-center gap-2">
+
+            {/* 카테고리, 댓글, 날짜 */}
+            <div className="mt-0.5 flex flex-wrap items-center gap-2">
               <Badge
                 variant="gray"
                 shape="rounded"
@@ -90,8 +95,10 @@ const PostItem = ({ post }) => {
           </div>
         </div>
       </td>
-      <td className="px-8 py-5 text-sm font-medium text-slate-600">
-        <div className="flex items-center gap-2">
+
+      {/* 작성자 영역 */}
+      <td className="mt-3 px-0 py-0 text-sm font-medium text-slate-600 md:mt-0 md:w-48 md:px-8 md:py-5">
+        <div className="flex items-center gap-2 pl-0 md:pl-0">
           {/* 아바타 이미지 */}
           <div className="h-6 w-6 flex-shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-50">
             {post.author?.avatar_url && !imageError ? (
@@ -111,7 +118,8 @@ const PostItem = ({ post }) => {
           <span>{post.author?.username || '알 수 없음'}</span>
         </div>
       </td>
-      <td className="px-8 py-5">
+      {/* 관리 버튼 */}
+      <td className="hidden px-8 py-5 md:table-cell">
         <div className="flex translate-x-1 justify-end gap-2 opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:opacity-100">
           {canEdit && (
             <button

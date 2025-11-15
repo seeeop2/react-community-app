@@ -65,61 +65,68 @@ const PostDetail = () => {
   };
 
   return (
-    <div className="mx-auto max-w-2xl p-12">
-      <Button variant="ghost" className="mb-8 px-0" onClick={() => nav('/')}>
+    <div className="mx-auto max-w-2xl p-5 md:p-12">
+      <Button variant="ghost" className="mb-6 px-0" onClick={() => nav('/')}>
         <ArrowLeft size={20} /> 목록으로 돌아가기
       </Button>
 
-      <div className="rounded-3xl border border-gray-100 bg-white p-10 shadow-sm">
+      <div className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm md:rounded-3xl md:p-10">
         <div className="mb-6 flex items-center justify-between text-sm">
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-3">
-              <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-sm">
-                {post.author?.avatar_url && !imageError ? (
-                  <img
-                    src={post.author.avatar_url}
-                    className="h-full w-full object-cover"
-                    alt={post.author.username}
-                    onError={() => setImageError(true)}
-                  />
-                ) : (
-                  <div className="flex h-full w-full items-center justify-center bg-slate-50 text-slate-400">
-                    <User size={22} />
-                  </div>
-                )}
-              </div>
-              <div className="flex flex-col">
-                <span className="text-[15px] font-bold text-slate-800">
-                  {post.author?.username || '알 수 없음'}
-                </span>
-                <div className="flex items-center gap-1 text-[12px] font-medium text-gray-400">
-                  <Calendar size={12} /> {formattedDate}
+          <div className="flex items-center gap-3">
+            {/* 아바타 */}
+            <div className="h-10 w-10 flex-shrink-0 overflow-hidden rounded-full border border-slate-200 bg-slate-100 shadow-sm">
+              {post.author?.avatar_url && !imageError ? (
+                <img
+                  src={post.author.avatar_url}
+                  className="h-full w-full object-cover"
+                  alt={post.author.username}
+                  onError={() => setImageError(true)}
+                />
+              ) : (
+                <div className="flex h-full w-full items-center justify-center bg-slate-50 text-slate-400">
+                  <User size={22} />
                 </div>
+              )}
+            </div>
+            <div className="flex flex-col">
+              <span className="text-[15px] font-bold text-slate-800">
+                {post.author?.username || '알 수 없음'}
+              </span>
+
+              {/* 날짜 */}
+              <div className="flex items-center gap-1 text-[12px] font-medium text-gray-400">
+                <Calendar size={12} /> {formattedDate}
               </div>
             </div>
           </div>
-
-          <Badge size="sm" fontWeight="bold">
-            <Tag size={14} /> {CATEGORY_MAP[post.category]}
-          </Badge>
+          <div className="flex-shrink-0">
+            <Badge size="sm" variant="blue" fontWeight="bold">
+              <Tag size={14} /> {CATEGORY_MAP[post.category]}
+            </Badge>
+          </div>
         </div>
 
-        <h1 className="mb-8 text-4xl font-extrabold leading-tight text-gray-900">
+        <h1 className="mb-6 text-2xl font-extrabold leading-tight text-gray-900 md:mb-8 md:text-4xl">
           {post.title}
         </h1>
 
-        <div className="min-h-[300px] whitespace-pre-wrap text-lg leading-relaxed text-gray-700">
+        <div className="min-h-[160px] whitespace-pre-wrap text-[16px] leading-relaxed text-gray-700 md:min-h-[300px] md:text-lg">
           {post.content}
         </div>
 
         {isAuthor && (
-          <div className="mt-12 flex justify-end gap-3 border-t border-gray-100 pt-8">
-            <Button variant="ghost" onClick={() => nav(`/edit/${post.id}`)}>
+          <div className="flex justify-end gap-2 border-t border-gray-100 pt-6 md:gap-3">
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => nav(`/edit/${post.id}`)}
+            >
               <Edit3 size={16} /> 수정
             </Button>
 
             <Button
               variant="dangerGhost"
+              size="sm"
               loading={isRemoving}
               onClick={onClickDelete}
             >
@@ -128,8 +135,11 @@ const PostDetail = () => {
           </div>
         )}
       </div>
-      <section className="mt-0 border-t border-slate-100 pt-6">
-        <h3 className="mb-6 text-xl font-bold text-slate-900">댓글</h3>
+
+      <section className="mt-8 border-t border-slate-100 pt-8 md:mt-12">
+        <h3 className="mb-6 text-lg font-bold text-slate-900 md:text-xl">
+          댓글
+        </h3>
         <CommentInput postId={id} />
         <CommentList postId={id} />
       </section>

@@ -120,7 +120,7 @@ const Home = () => {
   }, []);
 
   return (
-    <div className="mx-auto max-w-7xl p-12">
+    <div className="mx-auto max-w-7xl p-6 md:p-12">
       <Header
         badge="Community"
         title="Company"
