@@ -17,7 +17,8 @@ export const getPosts = async (page = 0) => {
     created_at, 
     is_deleted,
     author,
-    comment_count
+    comment_count,
+    like_count
     `
     )
     .eq('is_deleted', false)

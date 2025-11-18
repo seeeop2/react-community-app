@@ -1,7 +1,15 @@
 import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CATEGORY_MAP } from '../constants/categories.js';
-import { ArrowLeft, Calendar, Edit3, Tag, Trash2, User } from 'lucide-react';
+import {
+  ArrowLeft,
+  Calendar,
+  Edit3,
+  Heart,
+  Tag,
+  Trash2,
+  User,
+} from 'lucide-react';
 import Button from '../components/Button.jsx';
 import Badge from '../components/Badge.jsx';
 import usePost from '../hooks/queries/usePost.js';
@@ -9,6 +17,9 @@ import useAuth from '../hooks/useAuth.js';
 import useDeletePost from '../hooks/mutations/useDeletePost.js';
 import CommentInput from '../components/CommentInput.jsx';
 import CommentList from '../components/CommentList.jsx';
+import { useToggleLike } from '../hooks/mutations/useToggleLike.js';
+import { usePostLikes } from '../hooks/queries/usePostLikes.js';
+import { cn } from '../utils/cn.js';
 
 const PostDetail = () => {
   // Hooks
@@ -19,6 +30,12 @@ const PostDetail = () => {
   const { user } = useAuth();
   const { data: post, isLoading, isError } = usePost(id);
   const { mutateAsync: removePost, isPending: isRemoving } = useDeletePost();
+  const {
+    isLiked,
+    likeCount,
+    isLoading: isLikesLoading,
+  } = usePostLikes(id, user?.id);
+  const { mutate: toggleLike, isPending: isLikeUpdating } = useToggleLike(id);
 
   // States & Refs
   const [imageError, setImageError] = useState(false);
@@ -62,6 +79,19 @@ const PostDetail = () => {
         nav('/', { replace: true });
       } catch (error) {}
     }
+  };
+
+  const handleLikeClick = () => {
+    if (!user) {
+      alert('로그인이 필요한 기능입니다.');
+      return;
+    }
+
+    toggleLike({
+      postId: post.id,
+      userId: user.id,
+      isLiked,
+    });
   };
 
   return (
@@ -112,6 +142,38 @@ const PostDetail = () => {
 
         <div className="min-h-[160px] whitespace-pre-wrap text-[16px] leading-relaxed text-gray-700 md:min-h-[300px] md:text-lg">
           {post.content}
+        </div>
+
+        {/* 좋아요 버튼 */}
+        <div className="flex justify-center border-b border-t border-gray-50">
+          <button
+            onClick={handleLikeClick}
+            disabled={isLikeUpdating}
+            className={cn(
+              'flex flex-col items-center gap-2 transition-all duration-300',
+              isLiked
+                ? 'scale-105 text-red-500'
+                : 'text-slate-400 hover:text-red-400'
+            )}
+          >
+            <div
+              className={cn(
+                'flex h-14 w-14 items-center justify-center rounded-full border-2 transition-all',
+                isLiked
+                  ? 'border-red-100 bg-red-50'
+                  : 'border-slate-100 bg-slate-50'
+              )}
+            >
+              <Heart
+                size={28}
+                fill={isLiked ? 'currentColor' : 'none'}
+                className={isLikeUpdating ? 'animate-pulse' : ''}
+              />
+            </div>
+            <span className="text-sm font-bold">
+              {isLikesLoading ? '...' : likeCount}
+            </span>
+          </button>
         </div>
 
         {isAuthor && (

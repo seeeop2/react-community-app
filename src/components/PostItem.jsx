@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Edit2, MessageSquare, Trash2, User } from 'lucide-react';
+import { Edit2, Heart, MessageSquare, Trash2, User } from 'lucide-react';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import { useNavigate } from 'react-router-dom';
 import Badge from './Badge.jsx';
@@ -86,6 +86,15 @@ const PostItem = ({ post }) => {
                   fillOpacity={post.comment_count > 0 ? 0.1 : 0}
                 />
                 <span>{post.comment_count}</span>
+              </div>
+
+              <div className="flex items-center gap-1 text-[11px] font-bold text-slate-400">
+                <Heart
+                  size={12}
+                  fill={post.like_count > 0 ? '#f87171' : 'none'}
+                  stroke={post.like_count > 0 ? '#f87171' : 'currentColor'}
+                />
+                <span>{post.like_count}</span>
               </div>
 
               <span className="text-[10px] text-slate-400">
