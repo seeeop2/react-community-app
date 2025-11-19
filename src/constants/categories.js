@@ -1,3 +1,5 @@
+export const DEFAULT_CATEGORY = 'ALL';
+
 export const CATEGORY_LIST = [
   {
     value: 'NOTICE',
@@ -15,7 +17,7 @@ export const CATEGORY_LIST = [
 
 export const FILTER_CATEGORIES = [
   {
-    value: 'ALL',
+    value: DEFAULT_CATEGORY,
     label: '전체',
   },
   ...CATEGORY_LIST,

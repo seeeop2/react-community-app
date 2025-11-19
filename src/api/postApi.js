@@ -1,27 +1,45 @@
-import { supabase } from '../lib/supabase'; // 데이터 전체 조회
+import { supabase } from '../lib/supabase';
+import { DEFAULT_CATEGORY } from '../constants/categories.js';
 
 // 데이터 전체 조회
-export const getPosts = async (page = 0) => {
+export const getPosts = async (
+  page = 0,
+  { keyword = '', category = DEFAULT_CATEGORY } = {}
+) => {
   const ITEMS_PER_PAGE = 10;
   const from = page * ITEMS_PER_PAGE;
   const to = from + ITEMS_PER_PAGE - 1;
 
-  const { data, error } = await supabase
+  // 기본 쿼리
+  let query = supabase
     .from('posts_with_counts')
     .select(
       `
-    id, 
-    title, 
-    category, 
-    author_id,
-    created_at, 
-    is_deleted,
-    author,
-    comment_count,
-    like_count
+      id, 
+      title, 
+      category, 
+      author_id,
+      created_at, 
+      is_deleted,
+      author,
+      comment_count,
+      like_count
     `
     )
-    .eq('is_deleted', false)
+    .eq('is_deleted', false);
+
+  // 카테고리 필터 적용
+  if (category && category !== DEFAULT_CATEGORY) {
+    query = query.eq('category', category);
+  }
+
+  // 검색어 필터 적용
+  if (keyword && keyword.trim()) {
+    query = query.ilike('title', `%${keyword}%`);
+  }
+
+  // 정렬 및 범위 지정 후 실행
+  const { data, error } = await query
     .order('created_at', { ascending: false })
     .range(from, to);
 

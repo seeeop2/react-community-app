@@ -1,12 +1,9 @@
 import React from 'react';
 import PostItem from './PostItem.jsx';
 
-const PostList = ({ posts, searchComponent }) => {
+const PostList = ({ posts }) => {
   return (
     <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/60">
-      {searchComponent && (
-        <div className="border-b border-slate-50 p-6">{searchComponent}</div>
-      )}
       <div className="md:overflow-x-auto">
         <table className="w-full min-w-0 table-fixed text-left">
           <thead className="hidden bg-slate-50/50 md:table-header-group">

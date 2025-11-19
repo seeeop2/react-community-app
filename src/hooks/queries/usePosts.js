@@ -1,11 +1,11 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import * as postApi from '../../api/postApi.js';
 
-const usePosts = () => {
+const usePosts = (filters) => {
   // 게시글 목록 조회 (무한 스크롤)
   const postsQuery = useInfiniteQuery({
-    queryKey: ['posts'],
-    queryFn: ({ pageParam = 0 }) => postApi.getPosts(pageParam),
+    queryKey: ['posts', filters],
+    queryFn: ({ pageParam = 0 }) => postApi.getPosts(pageParam, filters),
     getNextPageParam: (lastPage, allPages) => {
       // 페이지당 10개라고 가정할 때, 데이터가 없거나 부족하면 끝
       return !lastPage || lastPage.length < 10 ? undefined : allPages.length;

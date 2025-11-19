@@ -3,7 +3,6 @@ import StatsCard from '../components/StatsCard.jsx';
 import { FileText, Plus, Users, Zap } from 'lucide-react';
 import Header from '../components/Header.jsx';
 import PostList from '../components/PostList.jsx';
-import SearchBar from '../components/SearchBar.jsx';
 import { useNavigate } from 'react-router-dom';
 import Button from '../components/Button.jsx';
 import usePosts from '../hooks/queries/usePosts.js';
@@ -11,40 +10,33 @@ import * as postApi from '../api/postApi.js';
 import { handleError } from '../utils/errorHandler.js';
 import * as userApi from '../api/userApi.js';
 import Spinner from '../components/Spinner.jsx';
-import { FILTER_CATEGORIES } from '../constants/categories.js';
+import {
+  DEFAULT_CATEGORY,
+  FILTER_CATEGORIES,
+} from '../constants/categories.js';
 import useAuth from '../hooks/useAuth.js';
+import SearchBar from '../components/SearchBar.jsx';
 
 const Home = () => {
   // Hooks
   const nav = useNavigate();
 
-  // Custom Hooks
-  const { profile } = useAuth();
-  const { posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    usePosts();
-
   // States (필터/검색 관련) & Refs
   const observerRef = useRef(); // 바닥 감지용
   const [keyword, setKeyword] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('ALL');
+  const [selectedCategory, setSelectedCategory] = useState(DEFAULT_CATEGORY);
   const [stats, setStats] = useState({
     totalPosts: 0,
     todayPosts: 0,
     activeUserCount: 0,
   });
 
+  // Custom Hooks
+  const { profile } = useAuth();
+  const { posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    usePosts({ keyword, category: selectedCategory });
+
   // Sync / Derived
-  // 검색어 + 카테고리 필터링
-  const filteredPosts = posts.filter((post) => {
-    const matchesKeyword = post.title
-      .toLowerCase()
-      .includes(keyword.toLowerCase());
-    const matchesCategory =
-      selectedCategory === 'ALL' || post.category === selectedCategory;
-
-    return matchesKeyword && matchesCategory;
-  });
-
   // 다음 페이지 데이터 로드 함수
   const loadMorePosts = useCallback(() => {
     if (hasNextPage && !isFetchingNextPage) {
@@ -56,6 +48,7 @@ const Home = () => {
   // 카테고리 변경 시
   const handleCategoryChange = (categoryValue) => {
     setSelectedCategory(categoryValue);
+    setKeyword(''); // 카테고리 변경 시 검색어 초기화
   };
 
   const handleNewPost = () => {
@@ -174,17 +167,18 @@ const Home = () => {
         ))}
       </div>
 
+      <div className="border-b border-slate-50">
+        <SearchBar onSearch={setKeyword} value={keyword} />
+      </div>
+
       {/* 게시글 목록 영역 */}
-      {isLoading ? (
+      {isLoading && !isFetchingNextPage ? (
         <div className="py-20 text-center text-gray-500">
           데이터를 불러오는 중입니다...
         </div>
       ) : (
         <>
-          <PostList
-            posts={filteredPosts}
-            searchComponent={<SearchBar onSearch={setKeyword} />}
-          />
+          <PostList posts={posts} />
 
           {/* 무한 스크롤 트리거 */}
           <div

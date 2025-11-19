@@ -1,14 +1,11 @@
-import React, { useState } from 'react';
+import React from 'react';
 
 import { Search } from 'lucide-react';
 
-const SearchBar = ({ onSearch }) => {
-  const [search, setSearch] = useState('');
-
+const SearchBar = ({ onSearch, value }) => {
   const onChangeSearch = (e) => {
-    const value = e.target.value;
-    setSearch(value);
-    onSearch(value);
+    const newValue = e.target.value;
+    onSearch(newValue);
   };
 
   return (
@@ -21,7 +18,7 @@ const SearchBar = ({ onSearch }) => {
         type="text"
         placeholder="관심 있는 글 검색..."
         className="w-full rounded-xl border-none bg-slate-50 py-2.5 pl-12 pr-4 text-sm outline-none focus:ring-2 focus:ring-blue-500"
-        value={search}
+        value={value}
         onChange={onChangeSearch}
       />
     </div>
