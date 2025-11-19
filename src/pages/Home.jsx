@@ -25,6 +25,7 @@ const Home = () => {
   const observerRef = useRef(); // 바닥 감지용
   const [keyword, setKeyword] = useState('');
   const [selectedCategory, setSelectedCategory] = useState(DEFAULT_CATEGORY);
+  const [orderBy, setOrderBy] = useState('created_at'); // 기본값 최신순
   const [stats, setStats] = useState({
     totalPosts: 0,
     todayPosts: 0,
@@ -34,7 +35,7 @@ const Home = () => {
   // Custom Hooks
   const { profile } = useAuth();
   const { posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    usePosts({ keyword, category: selectedCategory });
+    usePosts({ keyword, category: selectedCategory, orderBy });
 
   // Sync / Derived
   // 다음 페이지 데이터 로드 함수
@@ -63,6 +64,10 @@ const Home = () => {
       return;
     }
     nav('/new');
+  };
+
+  const handleOrderChange = (e) => {
+    setOrderBy(e.target.value);
   };
 
   // useEffect
@@ -167,8 +172,22 @@ const Home = () => {
         ))}
       </div>
 
-      <div className="border-b border-slate-50">
-        <SearchBar onSearch={setKeyword} value={keyword} />
+      <div className="flex items-center justify-between gap-2 border-b border-slate-50 pb-4">
+        <div className="flex-1">
+          <SearchBar onSearch={setKeyword} value={keyword} />
+        </div>
+
+        <div className="flex shrink-0 items-center gap-2">
+          <select
+            value={orderBy}
+            onChange={handleOrderChange}
+            className="cursor-pointer bg-transparent text-sm font-semibold text-slate-600 outline-none transition-colors hover:text-blue-600"
+          >
+            <option value="created_at">최신순</option>
+            <option value="like_count">좋아요순</option>
+            <option value="comment_count">댓글순</option>
+          </select>
+        </div>
       </div>
 
       {/* 게시글 목록 영역 */}

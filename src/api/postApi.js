@@ -4,7 +4,7 @@ import { DEFAULT_CATEGORY } from '../constants/categories.js';
 // 데이터 전체 조회
 export const getPosts = async (
   page = 0,
-  { keyword = '', category = DEFAULT_CATEGORY } = {}
+  { keyword = '', category = DEFAULT_CATEGORY, orderBy = 'created_at' } = {}
 ) => {
   const ITEMS_PER_PAGE = 10;
   const from = page * ITEMS_PER_PAGE;
@@ -40,6 +40,7 @@ export const getPosts = async (
 
   // 정렬 및 범위 지정 후 실행
   const { data, error } = await query
+    .order(orderBy, { ascending: false })
     .order('created_at', { ascending: false })
     .range(from, to);
 
