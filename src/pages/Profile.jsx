@@ -1,58 +1,24 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useState } from 'react';
 import useAuth from '../hooks/useAuth.js';
 import ProfileForm from '../components/ProfileForm.jsx';
-import PostList from '../components/PostList.jsx';
-import usePosts from '../hooks/queries/usePosts.js';
 import { cn } from '../utils/cn.js';
 import Button from '../components/Button.jsx';
-import Spinner from '../components/Spinner.jsx';
+import UserPostList from '../components/UserPostList.jsx';
 import useUserStats from '../hooks/queries/useUserStats.js';
 
 const Profile = () => {
   // States & Refs
   const [activeTab, setActiveTab] = useState('profile');
-  const observerRef = useRef(); // 바닥 감지용
 
   // Custom Hooks
   const { profile } = useAuth();
-  // 내가 쓴 글 가져오기
-  const { posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    usePosts({
-      authorId: profile?.id,
-    });
   // 작성자의 전체 게시글 수 조회
   const { data: totalCount } = useUserStats(profile?.id);
-
-  // Sync / Derived
-  // 다음 페이지 데이터 로드 함수
-  const loadMorePosts = useCallback(() => {
-    if (hasNextPage && !isFetchingNextPage) {
-      fetchNextPage();
-    }
-  }, [hasNextPage, isFetchingNextPage, fetchNextPage]);
 
   // Event Handler
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
   };
-
-  // useEffect
-  // 바닥 감지
-  useEffect(() => {
-    if (isLoading || activeTab !== 'posts') return;
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasNextPage && !isFetchingNextPage) {
-          loadMorePosts();
-        }
-      },
-      { threshold: 0, rootMargin: '200px' }
-    );
-
-    if (observerRef.current) observer.observe(observerRef.current);
-    return () => observer.disconnect();
-  }, [loadMorePosts, hasNextPage, isFetchingNextPage, isLoading, activeTab]);
 
   // Early Return
   if (!profile) {
@@ -109,43 +75,13 @@ const Profile = () => {
         </div>
       </div>
 
+      {/* 컨텐츠 영역 */}
       {activeTab === 'profile' ? (
         <div className="mx-auto max-w-2xl">
           <ProfileForm profile={profile} key={profile.id} />
         </div>
       ) : (
-        <div className="space-y-6">
-          {isLoading && !isFetchingNextPage ? (
-            <div className="py-20 text-center">글을 불러오는 중입니다...</div>
-          ) : posts.length > 0 ? (
-            <>
-              <PostList posts={posts} />
-
-              {/* 무한 스크롤 트리거 */}
-              <div
-                ref={observerRef}
-                className="py-10 text-center text-sm text-gray-400"
-              >
-                {isFetchingNextPage ? (
-                  <div className="flex items-center justify-center gap-3">
-                    <Spinner variant="secondary" size="md" />
-                    <span className="font-medium text-slate-600">
-                      불러오는 중...
-                    </span>
-                  </div>
-                ) : !hasNextPage ? (
-                  '모든 글을 확인했습니다.'
-                ) : (
-                  ''
-                )}
-              </div>
-            </>
-          ) : (
-            <div className="py-20 text-center text-slate-400">
-              작성한 게시글이 없습니다.
-            </div>
-          )}
-        </div>
+        <UserPostList authorId={profile.id} />
       )}
     </div>
   );
