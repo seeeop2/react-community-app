@@ -1,10 +1,15 @@
-import { supabase } from '../lib/supabase';
-import { DEFAULT_CATEGORY } from '../constants/categories.js';
+import {supabase} from '../lib/supabase';
+import {DEFAULT_CATEGORY} from '../constants/categories.js';
 
 // 데이터 전체 조회
 export const getPosts = async (
   page = 0,
-  { keyword = '', category = DEFAULT_CATEGORY, orderBy = 'created_at' } = {}
+  {
+    keyword = '',
+    category = DEFAULT_CATEGORY,
+    orderBy = 'created_at',
+    authorId = null,
+  } = {}
 ) => {
   const ITEMS_PER_PAGE = 10;
   const from = page * ITEMS_PER_PAGE;
@@ -27,6 +32,11 @@ export const getPosts = async (
     `
     )
     .eq('is_deleted', false);
+
+  // 작성자 필터 적용
+  if (authorId) {
+    query = query.eq('author_id', authorId);
+  }
 
   // 카테고리 필터 적용
   if (category && category !== DEFAULT_CATEGORY) {
@@ -114,6 +124,18 @@ export const getPostStats = async () => {
     totalPosts: totalResponse.count,
     todayPosts: todayResponse.count,
   };
+};
+
+// 작성자별 게시글 수 조회
+export const getUserPostCount = async (authorId) => {
+  const { count, error } = await supabase
+    .from('posts')
+    .select('*', { count: 'exact', head: true })
+    .eq('author_id', authorId)
+    .eq('is_deleted', false);
+
+  if (error) throw error;
+  return count || 0;
 };
 
 // 게시글 생성 (Create)
