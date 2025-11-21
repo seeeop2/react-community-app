@@ -13,7 +13,7 @@ const Profile = () => {
   // Custom Hooks
   const { profile } = useAuth();
   // 작성자의 전체 게시글 수 조회
-  const { data: totalCount } = useUserStats(profile?.id);
+  const { totalCount, likedCount } = useUserStats(profile?.id);
 
   // Event Handler
   const handleTabChange = (tabName) => {
@@ -72,17 +72,39 @@ const Profile = () => {
           >
             내 게시글 ({totalCount})
           </Button>
+
+          <Button
+            variant="ghost"
+            size="sm"
+            fontWeight="bold"
+            onClick={() => setActiveTab('likes')}
+            className={cn(
+              'px-4 py-2 shadow-none transition-all',
+              activeTab === 'likes'
+                ? 'bg-white text-blue-600 shadow-sm hover:bg-white'
+                : 'text-slate-500 hover:text-slate-700'
+            )}
+          >
+            좋아요 ({likedCount})
+          </Button>
         </div>
       </div>
 
       {/* 컨텐츠 영역 */}
-      {activeTab === 'profile' ? (
-        <div className="mx-auto max-w-2xl">
+      <div className="mt-8">
+        {/* 프로필 수정 탭일 때 */}
+        {activeTab === 'profile' && (
           <ProfileForm profile={profile} key={profile.id} />
-        </div>
-      ) : (
-        <UserPostList authorId={profile.id} />
-      )}
+        )}
+
+        {/* 내 게시글 탭일 때 */}
+        {activeTab === 'posts' && <UserPostList userId={profile.id} />}
+
+        {/* 좋아요 탭일 때 */}
+        {activeTab === 'likes' && (
+          <UserPostList userId={profile.id} isLikedTab={true} />
+        )}
+      </div>
     </div>
   );
 };

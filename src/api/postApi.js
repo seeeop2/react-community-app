@@ -138,6 +138,57 @@ export const getUserPostCount = async (authorId) => {
   return count || 0;
 };
 
+// 내가 좋아요 한 게시글 총 개수 조회
+export const getLikedPostCount = async (userId) => {
+  const { count, error } = await supabase
+    .from('likes')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId);
+
+  if (error) throw error;
+  return count || 0;
+};
+
+// 내가 좋아요 한 게시글 목록 조회
+export const getLikedPosts = async (page = 0, userId) => {
+  const ITEMS_PER_PAGE = 10;
+  const from = page * ITEMS_PER_PAGE;
+  const to = from + ITEMS_PER_PAGE - 1;
+
+  // likes 테이블에서 내가 좋아요 한 post_id 목록을 가져온 뒤, posts 테이블과 조인
+  const { data, error } = await supabase
+    .from('likes')
+    .select(
+      `
+      post_id,
+      posts_with_counts (
+        id, 
+        title, 
+        category, 
+        author_id, 
+        created_at, 
+        is_deleted, 
+        author, 
+        comment_count, 
+        like_count
+      )
+    `
+    )
+    .eq('user_id', userId)
+    .eq('posts_with_counts.is_deleted', false)
+    .order('created_at', {
+      foreignTable: 'posts_with_counts',
+      ascending: false,
+    })
+    .range(from, to);
+
+  if (error) throw error;
+
+  return data
+    .map((item) => item.posts_with_counts)
+    .filter((post) => post !== null);
+};
+
 // 게시글 생성 (Create)
 export const createPost = async (postData) => {
   const { data, error } = await supabase

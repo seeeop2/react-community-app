@@ -1,16 +1,17 @@
-import React, {useCallback, useEffect, useRef} from 'react';
+import React, { useCallback, useEffect, useRef } from 'react';
 import usePosts from '../hooks/queries/usePosts.js';
 import PostList from './PostList.jsx';
 import Spinner from './Spinner.jsx';
 
-const UserPostList = ({ authorId }) => {
+const UserPostList = ({ userId, isLikedTab = false }) => {
   // States & Refs
   const observerRef = useRef(); // 바닥 감지용
 
   // Custom Hooks
-  // 내가 쓴 글 가져오기
+  // isLikedTab = false: 내가 쓴 글 가져오기
+  // isLikedTab = true: 내가 좋아요 한 글 가져오기
   const { posts, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } =
-    usePosts({ authorId });
+    usePosts({ userId, isLikedTab });
 
   // Sync / Derived
   // 다음 페이지 데이터 로드 함수
