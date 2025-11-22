@@ -16,10 +16,21 @@ const useUserStats = (userId) => {
     enabled: !!userId, // userId가 있을 때만 쿼리를 실행하도록 설정
   });
 
+  // 내가 댓글 단 게시글 수
+  const commentedCountQuery = useQuery({
+    queryKey: ['userStats', 'comments', userId],
+    queryFn: () => postApi.getCommentedPostCount(userId),
+    enabled: !!userId, // userId가 있을 때만 쿼리를 실행하도록 설정
+  });
+
   return {
     totalCount: postCountQuery.data ?? 0,
     likedCount: likedCountQuery.data ?? 0,
-    isLoading: postCountQuery.isLoading || likedCountQuery.isLoading,
+    commentedCount: commentedCountQuery.data ?? 0,
+    isLoading:
+      postCountQuery.isLoading ||
+      likedCountQuery.isLoading ||
+      commentedCountQuery.isLoading,
   };
 };
 

@@ -1,5 +1,5 @@
-import {supabase} from '../lib/supabase';
-import {DEFAULT_CATEGORY} from '../constants/categories.js';
+import { supabase } from '../lib/supabase';
+import { DEFAULT_CATEGORY } from '../constants/categories.js';
 
 // 데이터 전체 조회
 export const getPosts = async (
@@ -187,6 +187,62 @@ export const getLikedPosts = async (page = 0, userId) => {
   return data
     .map((item) => item.posts_with_counts)
     .filter((post) => post !== null);
+};
+
+// 내가 댓글을 단 게시글 총 개수 조회 (중복 포스트 제외)
+export const getCommentedPostCount = async (userId) => {
+  const { data, error } = await supabase
+    .from('comments')
+    .select('post_id')
+    .eq('author_id', userId);
+  if (error) throw error;
+
+  // Set을 이용해 중복된 post_id 제거 후 개수 반환
+  const uniquePostIds = new Set(data.map((item) => item.post_id));
+  return uniquePostIds.size;
+};
+
+// 내가 댓글을 단 게시글 목록 조회
+export const getCommentedPosts = async (page = 0, userId) => {
+  const ITEMS_PER_PAGE = 10;
+  const from = page * ITEMS_PER_PAGE;
+  const to = from + ITEMS_PER_PAGE - 1;
+
+  // 내가 댓글을 단 포스트 목록을 가져옴
+  const { data, error } = await supabase
+    .from('comments')
+    .select(
+      `
+      post_id,
+      posts_with_counts (
+        id, 
+        title, 
+        category, 
+        author_id, 
+        created_at, 
+        is_deleted, 
+        author, 
+        comment_count, 
+        like_count
+      )
+    `
+    )
+    .eq('author_id', userId)
+    .eq('posts_with_counts.is_deleted', false)
+    .order('created_at', { ascending: false })
+    .range(from, to);
+
+  if (error) throw error;
+
+  // post_id 기준으로 중복 제거 후 데이터 정제
+  const seen = new Set();
+  return data
+    .map((item) => item.posts_with_counts)
+    .filter((post) => {
+      if (!post || seen.has(post.id)) return false;
+      seen.add(post.id);
+      return true;
+    });
 };
 
 // 게시글 생성 (Create)

@@ -1,20 +1,19 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import * as postApi from '../../api/postApi.js';
 
-const usePosts = (filters) => {
+const usePosts = ({ userId, type }) => {
   // 게시글 목록 조회 (무한 스크롤)
   const postsQuery = useInfiniteQuery({
-    queryKey: ['posts', filters],
+    queryKey: ['posts', userId, type],
     queryFn: ({ pageParam = 0 }) => {
-      // 'isLikedTab' 필터가 들어오면 내가 좋아요 한 목록 API 호출
-      if (filters.isLikedTab) {
-        return postApi.getLikedPosts(pageParam, filters.userId);
+      switch (type) {
+        case 'likes': // 내가 좋아요 한 목록 API 호출
+          return postApi.getLikedPosts(pageParam, userId);
+        case 'comments': // 내가 댓글 단 목록 API 호출
+          return postApi.getCommentedPosts(pageParam, userId);
+        default: // 내가 작성한 글 목록 API 호출
+          return postApi.getPosts(pageParam, { authorId: userId });
       }
-
-      return postApi.getPosts(pageParam, {
-        ...filters,
-        authorId: filters.userId,
-      });
     },
     getNextPageParam: (lastPage, allPages) => {
       // 페이지당 10개라고 가정할 때, 데이터가 없거나 부족하면 끝
