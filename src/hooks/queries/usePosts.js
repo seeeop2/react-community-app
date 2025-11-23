@@ -1,10 +1,10 @@
 import { useInfiniteQuery } from '@tanstack/react-query';
 import * as postApi from '../../api/postApi.js';
 
-const usePosts = ({ userId, type }) => {
+const usePosts = ({ userId, type, ...filters }) => {
   // 게시글 목록 조회 (무한 스크롤)
   const postsQuery = useInfiniteQuery({
-    queryKey: ['posts', userId, type],
+    queryKey: ['posts', { userId, type, ...filters }],
     queryFn: ({ pageParam = 0 }) => {
       switch (type) {
         case 'likes': // 내가 좋아요 한 목록 API 호출
@@ -12,7 +12,10 @@ const usePosts = ({ userId, type }) => {
         case 'comments': // 내가 댓글 단 목록 API 호출
           return postApi.getCommentedPosts(pageParam, userId);
         default: // 내가 작성한 글 목록 API 호출
-          return postApi.getPosts(pageParam, { authorId: userId });
+          return postApi.getPosts(pageParam, {
+            ...filters,
+            authorId: userId,
+          });
       }
     },
     getNextPageParam: (lastPage, allPages) => {
