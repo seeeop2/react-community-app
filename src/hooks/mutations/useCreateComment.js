@@ -22,6 +22,9 @@ const useCreateComment = (postId) => {
     onSuccess: () => {
       // 댓글 작성이 성공하면 해당 게시글의 댓글 목록만 새로고침
       queryClient.invalidateQueries({ queryKey: ['comments', postId] });
+
+      // 게시글 목록의 댓글 카운트를 위해 posts 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['posts'] });
     },
     onError: (err) => handleError('댓글 작성에 실패했습니다.', err),
   });
