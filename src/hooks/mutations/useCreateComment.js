@@ -25,6 +25,9 @@ const useCreateComment = (postId) => {
 
       // 게시글 목록의 댓글 카운트를 위해 posts 쿼리 무효화
       queryClient.invalidateQueries({ queryKey: ['posts'] });
+
+      // 알림 목록 새로고침을 위해 쿼리 무효화
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
     onError: (err) => handleError('댓글 작성에 실패했습니다.', err),
   });

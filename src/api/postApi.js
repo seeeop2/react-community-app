@@ -245,6 +245,25 @@ export const getCommentedPosts = async (page = 0, userId) => {
     });
 };
 
+/**
+ * 알림용 게시글 요약 정보 조회
+ */
+export const getPostSummaryForNotify = async (postId) => {
+  const { data, error } = await supabase
+    .from('posts')
+    .select(
+      `
+    author_id, 
+    title
+    `
+    )
+    .eq('id', postId)
+    .single();
+
+  if (error) throw error;
+  return data;
+};
+
 // 게시글 생성 (Create)
 export const createPost = async (postData) => {
   const { data, error } = await supabase

@@ -1,19 +1,43 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { supabase } from '../lib/supabase.js';
-import { LayoutDashboard, LogIn, LogOut, User } from 'lucide-react';
+import { Bell, LayoutDashboard, LogIn, LogOut, User } from 'lucide-react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import useAuth from '../hooks/useAuth.js';
+import { useNotifications } from '../hooks/queries/useNotifications.js';
+import NotificationDropdown from './NotificationDropdown.jsx';
+import { cn } from '../utils/cn.js';
+import useMarkAsRead from '../hooks/mutations/useMarkAsRead.js';
 
 const Navbar = () => {
   // Hooks
   const nav = useNavigate();
   const location = useLocation();
 
-  // Custom Hooks
-  const { profile } = useAuth();
-
   // States & Refs
   const [imageError, setImageError] = useState(false);
+  const [isNotificationVisible, setIsNotificationVisible] = useState(false);
+  const notificationDropdownRef = useRef(null); // 드롭다운 영역 참조
+
+  // Custom Hooks
+  const { profile } = useAuth();
+  const { notifications, isLoading, unreadCount } = useNotifications(
+    profile?.id
+  );
+  const { mutate: markAsRead } = useMarkAsRead(profile?.id);
+
+  // Effects
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        notificationDropdownRef.current &&
+        !notificationDropdownRef.current.contains(event.target)
+      ) {
+        setIsNotificationVisible(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   // Early Return
   if (location.pathname === '/auth') {
@@ -57,11 +81,43 @@ const Navbar = () => {
           </span>
         </div>
 
-        {/* 오른쪽: 유저 정보 및 메뉴 */}
+        {/* 오른쪽: 알림 및 유저 정보 */}
         <div className="flex items-center gap-3 md:gap-6">
           {profile ? (
             /* 로그인 된 상태: 기존 유저 정보 + 로그아웃 */
             <>
+              {/* 알림 아이콘 + 드롭다운 */}
+              <div className="relative" ref={notificationDropdownRef}>
+                <div
+                  className={cn(
+                    'relative cursor-pointer rounded-xl p-2 transition-colors',
+                    isNotificationVisible
+                      ? 'bg-blue-50 text-blue-600'
+                      : 'text-slate-400 hover:text-blue-600'
+                  )}
+                  onClick={() =>
+                    setIsNotificationVisible(!isNotificationVisible)
+                  }
+                >
+                  <Bell size={22} />
+                  {unreadCount > 0 && (
+                    <span className="absolute right-1 top-1 flex h-4 w-4 items-center justify-center rounded-full bg-red-500 text-[10px] font-bold text-white ring-2 ring-white">
+                      {unreadCount}
+                    </span>
+                  )}
+                </div>
+
+                {/* 드롭다운 영역 */}
+                {isNotificationVisible && (
+                  <NotificationDropdown
+                    notifications={notifications}
+                    isLoading={isLoading}
+                    markAsRead={markAsRead}
+                    onClose={() => setIsNotificationVisible(false)}
+                  />
+                )}
+              </div>
+
               <div className="flex items-center gap-3 border-r border-slate-200 pr-4 md:pr-6">
                 <div className="hidden text-right sm:block">
                   <p className="text-sm font-bold leading-none text-slate-800">
