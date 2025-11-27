@@ -4,12 +4,15 @@ import { ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
 import useCreatePost from '../hooks/mutations/useCreatePost.js';
+import PostEditorSkeleton from '../components/skeletons/PostEditorSkeleton.jsx';
+import useAuth from '../hooks/useAuth.js';
 
 const New = () => {
   // Hooks
   const nav = useNavigate();
 
   // Custom Hooks
+  const { isLoading: isAuthLoading } = useAuth();
   const { mutateAsync: createPost, isPending: isCreating } = useCreatePost();
 
   // Event Handler
@@ -33,11 +36,15 @@ const New = () => {
       <h2 className="mb-6 text-2xl font-extrabold md:mb-8 md:text-3xl">
         새 글 쓰기
       </h2>
-      <PostEditor
-        submitButtonText="작성 완료하기"
-        onSubmit={handleSubmit}
-        isSubmitting={isCreating}
-      />
+      {isAuthLoading ? (
+        <PostEditorSkeleton />
+      ) : (
+        <PostEditor
+          submitButtonText="작성 완료하기"
+          onSubmit={handleSubmit}
+          isSubmitting={isCreating}
+        />
+      )}
     </div>
   );
 };

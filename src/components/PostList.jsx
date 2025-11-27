@@ -1,7 +1,8 @@
 import React from 'react';
 import PostItem from './PostItem.jsx';
+import PostItemSkeleton from './skeletons/PostItemSkeleton.jsx';
 
-const PostList = ({ posts }) => {
+const PostList = ({ posts, isLoading }) => {
   return (
     <div className="overflow-hidden rounded-[2rem] border border-slate-100 bg-white shadow-xl shadow-slate-200/60">
       <div className="md:overflow-x-auto">
@@ -20,9 +21,11 @@ const PostList = ({ posts }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-50">
-            {posts.map((post) => (
-              <PostItem key={post.id} post={post} />
-            ))}
+            {isLoading
+              ? Array(5)
+                  .fill(0)
+                  .map((_, i) => <PostItemSkeleton key={i} />)
+              : posts.map((post) => <PostItem key={post.id} post={post} />)}
           </tbody>
         </table>
       </div>

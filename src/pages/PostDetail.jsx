@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { CATEGORY_MAP } from '../constants/categories.js';
 import {
+  AlertCircle,
   ArrowLeft,
   Calendar,
   Edit3,
@@ -20,11 +21,15 @@ import CommentList from '../components/CommentList.jsx';
 import { useToggleLike } from '../hooks/mutations/useToggleLike.js';
 import { usePostLikes } from '../hooks/queries/usePostLikes.js';
 import { cn } from '../utils/cn.js';
+import PostDetailSkeleton from './skeletons/PostDetailSkeleton.jsx';
 
 const PostDetail = () => {
   // Hooks
   const { id } = useParams();
   const nav = useNavigate();
+
+  // States & Refs
+  const [imageError, setImageError] = useState(false);
 
   // Custom Hooks
   const { user } = useAuth();
@@ -37,37 +42,54 @@ const PostDetail = () => {
   } = usePostLikes(id, user?.id);
   const { mutate: toggleLike, isPending: isLikeUpdating } = useToggleLike(id);
 
-  // States & Refs
-  const [imageError, setImageError] = useState(false);
-
-  // Early Return (데이터 로드 전)
-  if (isLoading) {
-    return (
-      <div className="py-20 text-center text-lg text-gray-500">
-        데이터를 불러오는 중...
-      </div>
-    );
-  }
-
-  if (!post || isError) {
-    return (
-      <div className="py-20 text-center">
-        <p className="mb-4 text-gray-500">
-          게시글을 찾을 수 없거나 삭제되었습니다.
-        </p>
-        <Button onClick={() => nav('/')}>목록으로 돌아가기</Button>
-      </div>
-    );
-  }
-
   // Sync / Derived
   // 가져온 데이터 가공 및 변수 할당
-  const isAuthor = user?.id === post.author_id;
-  const formattedDate = new Date(post.created_at).toLocaleDateString('ko-KR', {
+  const isAuthor = user?.id === post?.author_id;
+  const formattedDate = new Date(post?.created_at).toLocaleDateString('ko-KR', {
     year: 'numeric',
     month: 'long',
     day: 'numeric',
   });
+
+  // Early Return
+  if (isLoading) {
+    return <PostDetailSkeleton />;
+  }
+
+  if (!isLoading && (!post || isError)) {
+    return (
+      <div className="mx-auto flex max-w-2xl flex-col items-center px-5 py-24 md:py-32">
+        {/* 에러 아이콘 */}
+        <div className="mb-6 flex justify-center">
+          <div className="rounded-full bg-red-50 p-6 text-red-400">
+            <AlertCircle size={48} strokeWidth={1.5} />
+          </div>
+        </div>
+
+        {/* 텍스트 영역 */}
+        <div className="text-center">
+          <h2 className="mb-2 text-2xl font-bold text-slate-800">
+            게시글을 찾을 수 없습니다.
+          </h2>
+          <p className="mb-10 text-slate-500">
+            삭제된 게시글이거나 잘못된 접근입니다.
+          </p>
+        </div>
+
+        {/* 버튼 영역 */}
+        <div className="flex w-full justify-center">
+          <Button
+            onClick={() => nav('/')}
+            variant="ghost"
+            fontWeight="bold"
+            className="min-w-[160px] py-3"
+          >
+            홈으로 돌아가기
+          </Button>
+        </div>
+      </div>
+    );
+  }
 
   // Event Handler
   const onClickDelete = async () => {
@@ -75,7 +97,7 @@ const PostDetail = () => {
       window.confirm('정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.')
     ) {
       try {
-        await removePost(post.id); // 비동기 작업 시 await
+        await removePost(post.id);
         nav('/', { replace: true });
       } catch (error) {}
     }

@@ -5,13 +5,14 @@ import { cn } from '../utils/cn.js';
 import Button from '../components/Button.jsx';
 import UserPostList from '../components/UserPostList.jsx';
 import useUserStats from '../hooks/queries/useUserStats.js';
+import ProfileFormSkeleton from '../components/skeletons/ProfileFormSkeleton.jsx';
 
 const Profile = () => {
   // States & Refs
   const [activeTab, setActiveTab] = useState('profile');
 
   // Custom Hooks
-  const { profile } = useAuth();
+  const { profile, isLoading: isAuthLoading } = useAuth();
   // 작성자의 전체 게시글 수 조회
   const { totalCount, likedCount, commentedCount } = useUserStats(profile?.id);
 
@@ -19,15 +20,6 @@ const Profile = () => {
   const handleTabChange = (tabName) => {
     setActiveTab(tabName);
   };
-
-  // Early Return
-  if (!profile) {
-    return (
-      <div className="py-20 text-center text-gray-500">
-        프로필 데이터를 불러오는 중...
-      </div>
-    );
-  }
 
   return (
     <div className="mx-auto max-w-4xl p-8 sm:p-12">
@@ -107,24 +99,26 @@ const Profile = () => {
 
       {/* 컨텐츠 영역 */}
       <div className="mt-8">
-        {/* 프로필 수정 탭일 때 */}
-        {activeTab === 'profile' && (
-          <ProfileForm profile={profile} key={profile.id} />
-        )}
+        {activeTab === 'profile' &&
+          (isAuthLoading || !profile ? (
+            <ProfileFormSkeleton />
+          ) : (
+            <ProfileForm profile={profile} key={profile.id} />
+          ))}
 
         {/* 내 게시글 탭일 때 */}
         {activeTab === 'posts' && (
-          <UserPostList userId={profile.id} type={'posts'} />
+          <UserPostList userId={profile?.id} type={'posts'} />
         )}
 
         {/* 좋아요 탭일 때 */}
         {activeTab === 'likes' && (
-          <UserPostList userId={profile.id} type={'likes'} />
+          <UserPostList userId={profile?.id} type={'likes'} />
         )}
 
         {/* 내 댓글 탭일 때 */}
         {activeTab === 'comments' && (
-          <UserPostList userId={profile.id} type={'comments'} />
+          <UserPostList userId={profile?.id} type={'comments'} />
         )}
       </div>
     </div>

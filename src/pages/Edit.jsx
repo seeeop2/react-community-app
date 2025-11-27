@@ -1,11 +1,12 @@
 import React from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
+import { AlertCircle, ArrowLeft } from 'lucide-react';
 import PostEditor from '../components/PostEditor.jsx';
 import Button from '../components/Button.jsx';
 import usePost from '../hooks/queries/usePost.js';
 import useAuth from '../hooks/useAuth.js';
 import { useUpdatePost } from '../hooks/mutations/useUpdatePost.js';
+import PostEditorSkeleton from '../components/skeletons/PostEditorSkeleton.jsx';
 
 const Edit = () => {
   // Hooks
@@ -13,40 +14,70 @@ const Edit = () => {
   const nav = useNavigate();
 
   // Custom Hooks
-  const { user } = useAuth();
+  const { user, isLoading: isAuthLoading } = useAuth();
   const { mutateAsync: editPost, isPending: isEditing } = useUpdatePost();
+  const { data: post, isLoading: isPostLoading, isError } = usePost(id);
 
-  const { data: post, isLoading, isError } = usePost(id);
+  // Sync / Derived
+  // 통합 로딩 상태 (인증 확인 중이거나 게시글 로딩 중일 때)
+  const showSkeleton = isAuthLoading || isPostLoading;
 
-  // Early Return 첫 번째 (데이터 로드 전)
-  if (isLoading) {
+  // Early Return
+  if (!showSkeleton && (!post || isError)) {
     return (
-      <div className="py-20 text-center text-lg text-gray-500">
-        데이터를 불러오는 중...
+      <div className="mx-auto flex max-w-2xl flex-col items-center px-5 py-24 md:py-32">
+        {/* 아이콘 */}
+        <div className="mb-6 flex justify-center">
+          <div className="rounded-full bg-red-50 p-6 text-red-400">
+            <AlertCircle size={48} strokeWidth={1.5} />
+          </div>
+        </div>
+
+        {/* 텍스트 영역 */}
+        <div className="text-center">
+          <h2 className="mb-2 text-2xl font-bold text-slate-800">
+            게시글을 찾을 수 없습니다.
+          </h2>
+          <p className="mb-10 text-slate-500">
+            삭제된 게시글이거나 잘못된 접근입니다.
+          </p>
+        </div>
+
+        {/* 버튼 영역 */}
+        <div className="flex w-full justify-center">
+          <Button
+            onClick={() => nav('/')}
+            variant="ghost"
+            fontWeight="bold"
+            className="min-w-[160px] py-3"
+          >
+            홈으로 돌아가기
+          </Button>
+        </div>
       </div>
     );
   }
 
-  if (!post || isError) {
-    return (
-      <div className="py-20 text-center">
-        <p className="mb-4 text-gray-500">게시글을 찾을 수 없습니다.</p>
-        <Button onClick={() => nav('/')}>홈으로 돌아가기</Button>
-      </div>
-    );
+  // 권한 확인 (데이터가 확실히 있을 때만 실행)
+  if (!showSkeleton && user && post && post.author_id !== user.id) {
+    alert('본인의 글만 수정할 수 있습니다.');
+    nav('/', { replace: true });
+    return null; // 리다이렉트 중 렌더링 방지
   }
 
   // Event Handler
   const handleSubmit = async (input) => {
-    await editPost({
-      id,
-      fields: {
-        title: input.title,
-        content: input.content,
-        category: input.category,
-      },
-    });
-    nav(`/post/${id}`, { replace: true });
+    try {
+      await editPost({
+        id,
+        fields: {
+          title: input.title,
+          content: input.content,
+          category: input.category,
+        },
+      });
+      nav(`/post/${id}`, { replace: true });
+    } catch (error) {}
   };
 
   const handleCancel = () => {
@@ -57,13 +88,6 @@ const Edit = () => {
     }
   };
 
-  // Early Return 두 번째 (데이터 로드 후)
-  if (user && post.author_id !== user.id) {
-    alert('본인의 글만 수정할 수 있습니다.');
-    nav('/', { replace: true });
-    return null; // 리다이렉트 중 렌더링 방지
-  }
-
   return (
     <div className="mx-auto max-w-2xl p-5 md:p-12">
       <Button variant="ghost" onClick={handleCancel} className="mb-8 px-0">
@@ -72,12 +96,17 @@ const Edit = () => {
       <h2 className="mb-6 text-2xl font-extrabold md:mb-8 md:text-3xl">
         글 수정하기
       </h2>
-      <PostEditor
-        initData={post}
-        submitButtonText="수정 완료하기"
-        onSubmit={handleSubmit}
-        isSubmitting={isEditing}
-      />
+
+      {showSkeleton ? (
+        <PostEditorSkeleton />
+      ) : (
+        <PostEditor
+          initData={post}
+          submitButtonText="수정 완료하기"
+          onSubmit={handleSubmit}
+          isSubmitting={isEditing}
+        />
+      )}
     </div>
   );
 };
