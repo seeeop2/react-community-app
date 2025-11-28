@@ -11,6 +11,7 @@ import {
 import Button from '../components/Button.jsx';
 import heic2any from 'heic2any';
 import imageCompression from 'browser-image-compression';
+import toast from 'react-hot-toast';
 
 const ProfileForm = ({ profile }) => {
   // Hooks
@@ -49,15 +50,20 @@ const ProfileForm = ({ profile }) => {
       selectedFile.type === 'image/heic';
 
     if (!ALLOWED_IMAGE_TYPES.includes(selectedFile.type) && !isHEIC) {
-      alert('JPG, PNG, WebP, HEIC 파일만 업로드할 수 있습니다.');
+      toast.error('JPG, PNG, WebP, HEIC 파일만 업로드 가능합니다.', {
+        id: 'img-type',
+      });
       e.target.value = '';
       return;
     }
 
     // 용량 초과 시 알림 이후 종료
     if (selectedFile.size > FILE_SIZE_LIMIT) {
-      alert(
-        `프로필 사진은 ${FILE_SIZE_LIMIT / (1024 * 1024)}MB를 초과할 수 없습니다.`
+      toast.error(
+        `프로필 사진은 ${FILE_SIZE_LIMIT / (1024 * 1024)}MB를 초과할 수 없습니다.`,
+        {
+          id: 'img-size',
+        }
       );
       e.target.value = '';
       return;
@@ -119,7 +125,9 @@ const ProfileForm = ({ profile }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.username.trim()) {
-      return alert('닉네임을 입력해주세요.');
+      return toast.error('닉네임을 입력해주세요.', {
+        id: 'nick-required',
+      });
     }
 
     try {
@@ -135,7 +143,7 @@ const ProfileForm = ({ profile }) => {
         URL.revokeObjectURL(previewUrl);
       }
 
-      alert('프로필이 저장되었습니다!');
+      toast.success('프로필이 저장되었습니다!');
       nav('/');
     } catch (error) {}
   };

@@ -6,6 +6,7 @@ import Badge from './Badge.jsx';
 import useAuth from '../hooks/useAuth.js';
 import useDeletePost from '../hooks/mutations/useDeletePost.js';
 import { cn } from '../utils/cn.js';
+import toast from 'react-hot-toast';
 
 const PostItem = ({ post }) => {
   // Hooks
@@ -40,7 +41,7 @@ const PostItem = ({ post }) => {
       window.confirm('정말 삭제하시겠습니까? 삭제된 글은 복구할 수 없습니다.')
     ) {
       await removePost(post.id);
-      alert('삭제되었습니다.');
+      toast.success('삭제되었습니다.');
     }
   };
 

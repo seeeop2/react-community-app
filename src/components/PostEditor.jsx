@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { CATEGORY_LIST } from '../constants/categories.js';
 import { Send } from 'lucide-react';
 import Button from './Button.jsx';
+import toast from 'react-hot-toast';
 
 const PostEditor = ({ initData, onSubmit, submitButtonText, isSubmitting }) => {
   // States & Refs
@@ -28,11 +29,15 @@ const PostEditor = ({ initData, onSubmit, submitButtonText, isSubmitting }) => {
 
   const handleSubmit = async () => {
     if (!input.title.trim()) {
-      window.alert('제목을 입력하세요!');
+      toast.error('제목을 입력해주세요!', {
+        id: 'title-required',
+      });
       return titleRef.current.focus();
     }
     if (!input.content.trim()) {
-      window.alert('내용을 입력하세요!');
+      toast.error('내용을 입력해주세요!', {
+        id: 'content-required',
+      });
       return contentRef.current.focus();
     }
 

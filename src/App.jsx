@@ -10,10 +10,24 @@ import AuthPage from './pages/AuthPage.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 import Navbar from './components/Navbar.jsx';
 import Profile from './pages/Profile.jsx';
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   return (
     <AuthProvider>
+      <Toaster
+        position="top-center" // 위치 설정
+        reverseOrder={false}
+        toastOptions={{
+          duration: 3000, // 3초 동안 표시
+          style: {
+            borderRadius: '12px',
+            background: '#334155',
+            color: '#fff',
+            fontSize: '14px',
+          },
+        }}
+      />
       <Navbar />
       <Routes>
         <Route path="/auth" element={<AuthPage />} />

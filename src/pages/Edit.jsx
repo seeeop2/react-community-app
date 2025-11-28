@@ -7,6 +7,7 @@ import usePost from '../hooks/queries/usePost.js';
 import useAuth from '../hooks/useAuth.js';
 import { useUpdatePost } from '../hooks/mutations/useUpdatePost.js';
 import PostEditorSkeleton from '../components/skeletons/PostEditorSkeleton.jsx';
+import toast from 'react-hot-toast';
 
 const Edit = () => {
   // Hooks
@@ -60,7 +61,9 @@ const Edit = () => {
 
   // 권한 확인 (데이터가 확실히 있을 때만 실행)
   if (!showSkeleton && user && post && post.author_id !== user.id) {
-    alert('본인의 글만 수정할 수 있습니다.');
+    toast.error('본인의 글만 수정할 수 있습니다.', {
+      id: 'edit-denied',
+    });
     nav('/', { replace: true });
     return null; // 리다이렉트 중 렌더링 방지
   }
@@ -76,6 +79,7 @@ const Edit = () => {
           category: input.category,
         },
       });
+      toast.success('수정이 완료되었습니다!');
       nav(`/post/${id}`, { replace: true });
     } catch (error) {}
   };

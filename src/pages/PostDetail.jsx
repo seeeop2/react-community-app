@@ -22,6 +22,7 @@ import { useToggleLike } from '../hooks/mutations/useToggleLike.js';
 import { usePostLikes } from '../hooks/queries/usePostLikes.js';
 import { cn } from '../utils/cn.js';
 import PostDetailSkeleton from './skeletons/PostDetailSkeleton.jsx';
+import toast from 'react-hot-toast';
 
 const PostDetail = () => {
   // Hooks
@@ -98,6 +99,7 @@ const PostDetail = () => {
     ) {
       try {
         await removePost(post.id);
+        toast.success('게시글이 삭제되었습니다.');
         nav('/', { replace: true });
       } catch (error) {}
     }
@@ -105,7 +107,9 @@ const PostDetail = () => {
 
   const handleLikeClick = () => {
     if (!user) {
-      alert('로그인이 필요한 기능입니다.');
+      toast.error('로그인이 필요한 기능입니다.', {
+        id: 'login-required',
+      });
       return;
     }
 
