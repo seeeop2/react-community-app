@@ -73,7 +73,8 @@ export const getPostById = async (id) => {
     author_id, 
     created_at, 
     is_deleted,
-    author
+    author,
+    image_url
     `
     )
     .eq('id', id)
@@ -262,6 +263,31 @@ export const getPostSummaryForNotify = async (postId) => {
 
   if (error) throw error;
   return data;
+};
+
+/**
+ * 게시글 이미지 업로드
+ */
+export const uploadPostImage = async (file) => {
+  const fileExt = file.name.split('.').pop();
+
+  // 파일명 중복 방지를 위해 timestamp + random string 조합
+  const fileName = `${Date.now()}_${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
+  const filePath = `posts/${fileName}`;
+
+  // Storage에 업로드
+  const { error: uploadError } = await supabase.storage
+    .from('react_community')
+    .upload(filePath, file);
+
+  if (uploadError) throw uploadError;
+
+  // Public URL 가져오기
+  const { data } = supabase.storage
+    .from('react_community')
+    .getPublicUrl(filePath);
+
+  return data.publicUrl;
 };
 
 // 게시글 생성 (Create)

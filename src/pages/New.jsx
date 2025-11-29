@@ -6,6 +6,7 @@ import Button from '../components/Button.jsx';
 import useCreatePost from '../hooks/mutations/useCreatePost.js';
 import PostEditorSkeleton from '../components/skeletons/PostEditorSkeleton.jsx';
 import useAuth from '../hooks/useAuth.js';
+import toast from 'react-hot-toast';
 
 const New = () => {
   // Hooks
@@ -17,8 +18,17 @@ const New = () => {
 
   // Event Handler
   const handleSubmit = async (input) => {
-    await createPost({ ...input });
-    nav('/', { replace: true });
+    const { selectedFile, previewUrl, ...cleanFields } = input;
+
+    try {
+      await createPost({
+        cleanFields,
+        selectedFile,
+      });
+
+      toast.success('게시글이 등록되었습니다!');
+      nav('/', { replace: true });
+    } catch (error) {}
   };
 
   const handleCancel = () => {

@@ -166,12 +166,23 @@ const PostDetail = () => {
           {post.title}
         </h1>
 
-        <div className="min-h-[160px] whitespace-pre-wrap text-[16px] leading-relaxed text-gray-700 md:min-h-[300px] md:text-lg">
+        {/* 이미지 영역 */}
+        {post.image_url && (
+          <div className="mb-8 flex justify-center overflow-hidden rounded-xl border border-gray-100 bg-gray-50 shadow-sm">
+            <img
+              src={post.image_url}
+              alt="게시글 이미지"
+              className="h-auto max-h-[500px] w-full object-contain"
+            />
+          </div>
+        )}
+
+        <div className="mb-8 whitespace-pre-wrap text-[16px] leading-relaxed text-gray-700 md:mb-10 md:text-lg">
           {post.content}
         </div>
 
         {/* 좋아요 버튼 */}
-        <div className="flex justify-center border-b border-t border-gray-50">
+        <div className="flex justify-center border-t border-gray-50 py-8">
           <button
             onClick={handleLikeClick}
             disabled={isLikeUpdating}
@@ -184,14 +195,14 @@ const PostDetail = () => {
           >
             <div
               className={cn(
-                'flex h-14 w-14 items-center justify-center rounded-full border-2 transition-all',
+                'flex h-14 w-14 items-center justify-center rounded-full border-2 shadow-sm transition-all',
                 isLiked
                   ? 'border-red-100 bg-red-50'
                   : 'border-slate-100 bg-slate-50'
               )}
             >
               <Heart
-                size={28}
+                size={26}
                 fill={isLiked ? 'currentColor' : 'none'}
                 className={isLikeUpdating ? 'animate-pulse' : ''}
               />
@@ -202,8 +213,9 @@ const PostDetail = () => {
           </button>
         </div>
 
+        {/* 수정/삭제 버튼 영역 */}
         {isAuthor && (
-          <div className="flex justify-end gap-2 border-t border-gray-100 pt-6 md:gap-3">
+          <div className="flex justify-end gap-2 pt-4 md:gap-3">
             <Button
               variant="ghost"
               size="sm"

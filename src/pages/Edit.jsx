@@ -77,7 +77,10 @@ const Edit = () => {
           title: input.title,
           content: input.content,
           category: input.category,
+          image_url: post.image_url, // 기존 이미지 URL 유지 (새 파일이 선택되지 않으면)
         },
+        selectedFile: input.selectedFile, // 새로 선택한 파일
+        currentPreviewUrl: input.previewUrl, // 현재 화면에 보이고 있는 URL (X 누르면 null)
       });
       toast.success('수정이 완료되었습니다!');
       nav(`/post/${id}`, { replace: true });
