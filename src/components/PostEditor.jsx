@@ -3,15 +3,8 @@ import { CATEGORY_LIST } from '../constants/categories.js';
 import { Camera, Send, X } from 'lucide-react';
 import Button from './Button.jsx';
 import toast from 'react-hot-toast';
-import imageCompression from 'browser-image-compression';
-
 import { handleError } from '../utils/errorHandler.js';
-import {
-  ALLOWED_IMAGE_TYPES,
-  DEFAULT_COMPRESSION_OPTIONS,
-  FILE_SIZE_LIMIT,
-} from '../constants/image.js';
-import heic2any from 'heic2any';
+import { processImageFile } from '../utils/imageUtils.js';
 
 const PostEditor = ({ initData, onSubmit, submitButtonText, isSubmitting }) => {
   // States & Refs
@@ -46,70 +39,17 @@ const PostEditor = ({ initData, onSubmit, submitButtonText, isSubmitting }) => {
       return;
     }
 
-    const isHEIC =
-      selectedFile.name.toLowerCase().endsWith('.heic') ||
-      selectedFile.type === 'image/heic';
-
-    if (!ALLOWED_IMAGE_TYPES.includes(selectedFile.type) && !isHEIC) {
-      toast.error('JPG, PNG, WebP, HEIC 파일만 업로드 가능합니다.', {
-        id: 'img-type',
-      });
-      e.target.value = '';
-      return;
-    }
-
-    // 용량 초과 시 알림 이후 종료
-    if (selectedFile.size > FILE_SIZE_LIMIT) {
-      toast.error(
-        `사진은 ${FILE_SIZE_LIMIT / (1024 * 1024)}MB를 초과할 수 없습니다.`,
-        {
-          id: 'img-size',
-        }
-      );
-      e.target.value = '';
-      return;
-    }
-
-    let processingFile = selectedFile; // 가공 흐름을 나타냄
-
-    // HEIC 파일인 경우 JPEG로 변환
-    if (isHEIC) {
-      try {
-        const convertedBlob = await heic2any({
-          blob: selectedFile,
-          toType: 'image/jpeg',
-          quality: 0.8,
-        });
-
-        // 변환된 Blob을 File 객체로 새로 만듦 (확장자도 .jpg로 교체)
-        processingFile = new File(
-          [convertedBlob],
-          selectedFile.name.replace(/\.[^/.]+$/, '.jpg'),
-          { type: 'image/jpeg' }
-        );
-      } catch (error) {
-        handleError('아이폰 이미지(HEIC) 변환 중 오류가 발생했습니다.', error);
+    try {
+      const compressedFile = await processImageFile(selectedFile);
+      if (!compressedFile) {
         e.target.value = '';
         return;
       }
-    }
 
-    // 압축 프로세스
-    try {
-      // 압축 옵션 설정
-      const compressOptions = {
-        ...DEFAULT_COMPRESSION_OPTIONS,
-      };
-
-      // 이미지 압축 진행
-      const compressedFile = await imageCompression(
-        processingFile,
-        compressOptions
-      );
       setSelectedFile(compressedFile); // 서버 전송용은 압축된 파일로 저장
 
       // 프리뷰 URL 생성 및 메모리 정리
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl?.startsWith('blob:')) {
         URL.revokeObjectURL(previewUrl);
       }
 
