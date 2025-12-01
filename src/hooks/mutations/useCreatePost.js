@@ -28,10 +28,11 @@ const useCreatePost = () => {
         is_deleted: false,
       });
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({
+    onSuccess: async () => {
+      await queryClient.invalidateQueries({
         queryKey: ['posts'],
         exact: false,
+        refetchType: 'all',
       });
     },
     onError: (err) => handleError('게시글 저장에 실패했습니다.', err),
